@@ -1,5 +1,11 @@
 ### Sudoku logic in general to use it for image processing.
 
+## TODO
+- [x] verticals
+- [x] horizontals
+- [ ] superarea
+- [ ] final algo, test
+
 """
 9x9
 2 or 3 types of areas:
