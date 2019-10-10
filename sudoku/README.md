@@ -1,4 +1,4 @@
-"""Sudoku logic in general to use it for image processing."""
+### Sudoku logic in general to use it for image processing.
 
 """
 9x9
@@ -28,6 +28,25 @@ linear areas: (left - right)
 (0,7) -> (8,7)
 (0,8) -> (8,8)
 
+---
+
+```python
+class Area:
+    # is a number between [1,..,9]
+    # exists 9x9 times
+class Horizontal:
+    # contains numbers from [1,..,9]
+    # exists 9 times
+class Vertical:
+    # contains numbers from [1,..,9]
+    # exists 9 times
+class Square:
+    # contains numbers from [1,..,9]
+    # exists 9 times
+class Sudoku:
+    # contains 9 x numbers from [1,..,9]
+    # exists 9 times
+```
 ---
 
 square areas:
