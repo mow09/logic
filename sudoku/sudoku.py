@@ -18,8 +18,11 @@ class Area:
 class SuperArea:
     """One SuperArea contains nice Area."""
 
-    def __init__(self, area):
-        self.area = area
+    def __init__(self, upper_left, lower_right):
+        """Initale the SuperArea."""
+        self.upper_left = upper_left
+        self.lower_right = lower_right
+        self.values = []
 
     # def is_not_nr(self):
     #     return self.existing
@@ -33,7 +36,15 @@ class Sudoku:
         self.difficulty = difficulty
         self.horizontals = [[], [], [], [], [], [], [], [], []]
         self.verticals = [[], [], [], [], [], [], [], [], []]
-        self.superareas = [[], [], [], [], [], [], [], [], []]
+        self.superarea = [SuperArea((0, 0), (2, 2)),
+                          SuperArea((0, 3), (2, 5)),
+                          SuperArea((0, 6), (2, 8)),
+                          SuperArea((3, 0), (5, 2)),
+                          SuperArea((3, 3), (5, 5)),
+                          SuperArea((3, 6), (5, 8)),
+                          SuperArea((6, 0), (8, 2)),
+                          SuperArea((6, 3), (8, 5)),
+                          SuperArea((6, 6), (8, 8))]
         self.missing_areas = []
         self.counts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -55,27 +66,26 @@ class Sudoku:
                 print('-------+-------+------')
         print()
 
-    def fill_superarea(self, n, m, val):
+    def fill_superareas(self, n, m, val):
         """Get a list of values in SuperAreas."""
         if n < 3 and m < 3:
-            self.superareas[0].append(val)
+            self.superarea[0].values.append(val)
         if n < 3 and m > 2 and m < 6:
-            self.superareas[1].append(val)
+            self.superarea[1].values.append(val)
         if n < 3 and m > 5:
-            self.superareas[2].append(val)
+            self.superarea[2].values.append(val)
         if n > 2 and n < 6 and m < 3:
-            self.superareas[3].append(val)
+            self.superarea[3].values.append(val)
         if n > 2 and n < 6 and m > 2 and m < 6:
-            self.superareas[4].append(val)
+            self.superarea[4].values.append(val)
         if n > 2 and n < 6 and m > 5:
-            self.superareas[5].append(val)
+            self.superarea[5].values.append(val)
         if n > 5 and m < 3:
-            self.superareas[6].append(val)
+            self.superarea[6].values.append(val)
         if n > 5 and m > 2 and m < 6:
-            self.superareas[7].append(val)
+            self.superarea[7].values.append(val)
         if n > 5 and m > 5:
-            self.superareas[8].append(val)
-        # self.superareas[1-9].append(val)
+            self.superarea[8].values.append(val)
 
     def fill_values(self, horizontals):
         """Fill the sudoku with existing values and ZEROS."""
@@ -92,7 +102,7 @@ class Sudoku:
                 # print(self.counts)
                 self.horizontals[n].append(Area(n, m, value, existing))
                 self.verticals[m].append(Area(n, m, value, existing))
-                self.fill_superarea(n, m, value)
+                self.fill_superareas(n, m, value)
 
     def get_order(self):
         """Return a list sorted by amount."""
@@ -109,23 +119,35 @@ class Sudoku:
             order.append(max_index+1)
         return order
 
-    def get_horizontals(self):
-        """Get the horizontal list of lists."""
-        return self.horizontals
-
-    def get_verticals(self):
-        """Get the vertical list of lists."""
-        return self.verticals
+    def get_boundary(self, this):
+        """Bounderies for horizontal- and verticals by SuperAreas."""
+        return ((self.superarea[this].upper_left[0],
+                 self.superarea[this].lower_right[0]),
+                (self.superarea[this].upper_left[1],
+                 self.superarea[this].lower_right[1]))
 
     def run_order(self):
-        """Runs through each SuperArea"""
+        """
+        Run through each SuperArea.
+
+        Check horizontl- and verticals.
+        """
         for number in self.get_order():
             print('searched:', number)
             for each in range(9):
                 print('Area number:', each)
-                if number not in self.superareas[each]:
-                    print('SuperArea', each, 'has no number', number)
-                    print()
+                if number not in self.superarea[each].values:
+                    # print('SuperArea', each, 'has no number', number)
+                    # for hori, verti in self.horizontals[n], self.verticals[n]
+                    # if number not in
+                    hori_boundary, verti_boundery = self.get_boundary(each)
+                    for i in range(hori_boundary[0], hori_boundary[1]+1):
+                        for v in self.horizontals[i]:
+                            print(v.v)
+                    for i in range(verti_boundery[0], verti_boundery[1]+1):
+                        for v in self.verticals[i]:
+                            print(v.v)
+
                     # print('SuperArea', area, 'has no number: ', number)
                 break
             break
@@ -168,6 +190,8 @@ def main():
     # print(s.missing_areas)
     # print(s.counts)
     # print('Order:', s.get_order())
+    # for i in s.superarea:
+    #     print(i.values)
 
 
 if __name__ == "__main__":
