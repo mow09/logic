@@ -99,3 +99,20 @@ fix values:
 (n7,m0), (n7,m1), (n7,m2), | (n7,m3), (n7,m4), (n7,m5), | (n7,m6), (n7,m7),  (n7,m8)
 (n8,m0), (n8,m1), (n8,m2), | (n8,m3), (n8,m4), (n8,m5), | (n8,m6), (n8,m7),  (n8,m8)
 """
+
+## Speed Test
+How to implement what.
+
+### comparison conditions
+
+```python
+(1) if (j+1) % 3 == 0 and j != 8:
+(2) if j in [2, 5]:
+```
+Nummer (2) ist schneller in `display()`:
+```
+63.5 µs ± 862 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+55.9 µs ± 403 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+```
+
+### numpy or list in list ?!

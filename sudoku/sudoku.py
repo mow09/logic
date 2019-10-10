@@ -10,12 +10,9 @@ class Area:
         self.n = n
         self.m = m
         self.v = v
-        self.pos = n, m
+        self.possibility = []
         self.exist = exist
         # self.existing = []
-
-    def is_nr(self):
-        return self.v
 
 
 class SuperArea:
@@ -36,6 +33,10 @@ class Sudoku:
         self.difficulty = difficulty
         self.horizontals = [[], [], [], [], [], [], [], [], []]
         self.verticals = [[], [], [], [], [], [], [], [], []]
+        self.superareas = [[], [], [], [], [], [], [], [], []]
+        self.missing_areas = []
+        self.counts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
         # self.superarea =
 
     def display(self):
@@ -46,24 +47,35 @@ class Sudoku:
                 if not isinstance(value, int):
                     value = value.v
                 line += ' ' + str(value)
-                if (i+1) % 3 == 0 and i != 8:
+                if i in [2, 5]:
                     line += ' |'
 
             print(line)
-            if (j+1) % 3 == 0 and j != 8:
+            if j in [2, 5]:
                 print('-------+-------+------')
         print()
 
-    def missing_areas(self):
-        pass
-
-    def get_horizontals(self):
-        """Get the horizontal list of lists."""
-        return self.horizontals
-
-    def get_verticals(self):
-        """Get the vertical list of lists."""
-        return self.verticals
+    def fill_superarea(self, n, m, val):
+        """Get a list of values in SuperAreas."""
+        if n < 3 and m < 3:
+            self.superareas[0].append(val)
+        if n < 3 and m > 2 and m < 6:
+            self.superareas[1].append(val)
+        if n < 3 and m > 5:
+            self.superareas[2].append(val)
+        if n > 2 and n < 6 and m < 3:
+            self.superareas[3].append(val)
+        if n > 2 and n < 6 and m > 2 and m < 6:
+            self.superareas[4].append(val)
+        if n > 2 and n < 6 and m > 5:
+            self.superareas[5].append(val)
+        if n > 5 and m < 3:
+            self.superareas[6].append(val)
+        if n > 5 and m > 2 and m < 6:
+            self.superareas[7].append(val)
+        if n > 5 and m > 5:
+            self.superareas[8].append(val)
+        # self.superareas[1-9].append(val)
 
     def fill_values(self, horizontals):
         """Fill the sudoku with existing values and ZEROS."""
@@ -73,32 +85,50 @@ class Sudoku:
                 value = int(val)
                 if value != 0:
                     existing = True
+                    self.counts[value-1] += 1
                 else:
                     existing = False
+                    self.missing_areas.append((n, m))
+                # print(self.counts)
                 self.horizontals[n].append(Area(n, m, value, existing))
                 self.verticals[m].append(Area(n, m, value, existing))
-                # print(a1.n, a1.m, a1.v, a1.exist)
-        # self.fill_verticals()
-        #
-        #     for n, h in enumerate(s.get_horizontals()):
-        #         for m, a in enumerate(h):
-        #             # print('test:', n, m, a.v)
-        #             verti[m].append(a)
+                self.fill_superarea(n, m, value)
 
-# ---
+    def get_order(self):
+        """Return a list sorted by amount."""
+        holder = self.counts.copy()
+        order = list()
+        counter = 0
+        while sum(holder) > 0:
+            max_value = max(holder)
+            max_index = holder.index(max_value)
+            holder[max_index] = 0
+            if counter > 20:
+                break
+            counter += 1
+            order.append(max_index+1)
+        return order
 
+    def get_horizontals(self):
+        """Get the horizontal list of lists."""
+        return self.horizontals
 
-def insert_existing(horizontals):
-    # run through n
-    for n, h in enumerate(horizontals):
-        # run through m
-        for m, val in enumerate(h.split()):
-            value = int(val)
-            if value != 0:
-                existing = True
-            else:
-                existing = False
-            a1 = Area(n, m, value, existing)
+    def get_verticals(self):
+        """Get the vertical list of lists."""
+        return self.verticals
+
+    def run_order(self):
+        """Runs through each SuperArea"""
+        for number in self.get_order():
+            print('searched:', number)
+            for each in range(9):
+                print('Area number:', each)
+                if number not in self.superareas[each]:
+                    print('SuperArea', each, 'has no number', number)
+                    print()
+                    # print('SuperArea', area, 'has no number: ', number)
+                break
+            break
 
 
 def main():
@@ -121,25 +151,23 @@ def main():
     s = Sudoku('medium')
     print(s.difficulty)
 
-    # print('horizontals: ', s.get_horizontals())
-
     s.fill_values(h_test)
 
-    for n, (h, vert) in enumerate(zip(s.get_horizontals(), s.get_verticals())):
+    for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
         for m, (a, b) in enumerate(zip(h, vert)):
             # print('test:', n, m, a.v)
             assert a.v == int(h_test[n].split()[m])
             assert b.v == int(h_test[m].split()[n])
 
-    # display(s.get_horizontals())
-    display_sudoku(sudoku_71())
-    s.display()
-
-    # print('veriticals: ', s.get_verticals())
-
-    # insert_existing(h)
-
-    print('\n')
+    # display_sudoku(sudoku_71())
+    # # display(s.get_horizontals())
+    # s.display()
+    # print(s.superareas)
+    # print('\n')
+    s.run_order()
+    # print(s.missing_areas)
+    # print(s.counts)
+    # print('Order:', s.get_order())
 
 
 if __name__ == "__main__":
