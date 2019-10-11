@@ -23,7 +23,8 @@ class SuperArea:
         self.upper_left = upper_left
         self.lower_right = lower_right
         self.values = []
-        self.counts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        # returns how often it is
+        self.amount = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 class Horizontal:
@@ -99,6 +100,7 @@ class Sudoku:
 
     def display(self):
         """Display the horizontal lines in sudoku style."""
+        print()
         for j, h in enumerate(self.horizontals):
             line = ''
             for i, value in enumerate(h.areas):
@@ -171,6 +173,8 @@ class Sudoku:
                 break
             counter += 1
             order.append(max_index+1)
+        print('order:', order)
+        print('count:', self.counts)
         return order
 
     def get_boundary(self, this):
@@ -185,12 +189,13 @@ class Sudoku:
     def fill_values_order(self, each):
         # print('fill_values_order')
         # print(each)
-        for index, count in enumerate(self.superarea[each].counts):
+        # print('amount:', self.superarea[each].amount)
+        for index, count in enumerate(self.superarea[each].amount):
             number = index + 1
             if count == 1:
-                self.superarea[each].counts[index] = 0
+                self.superarea[each].amount[index] = 0
                 print('fill in:', number)
-                self.counts[index] -= 1
+                self.counts[index] += 1
 
                 if number not in self.superarea[each].values:
                     # print('In SuperArea', each, 'set number', number)
@@ -243,23 +248,8 @@ class Sudoku:
                                         # add posibilities for horizontal and vertical areas -> redudant
                                         self.horizontals[n].areas[m].possibility.append(number)
                                         self.verticals[m].areas[n].possibility.append(number)
-                                        self.superarea[each].counts[number-1] += 1
+                                        self.superarea[each].amount[number-1] += 1
 
-            # check and update !!
-                                        # self.horizontals[n].areas[m].v = -1
-                                        # print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
-                                        #       self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility,
-                                        #       self.superarea[each].values)
-                                        #
-                                        # self.verticals[m].areas[n].v = -1
-                                        # print('Vertical n,m,p --', self.verticals[m].areas[n].n,
-                                        #       self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility,
-                                        #       self.superarea[each].values[m], self.superarea[each].values[n])
-                                        # index = (n-self.superarea[each].upper_left[0])*3+(
-                                        #     m-self.superarea[each].upper_left[1])
-                                        # print(self.superarea[each].upper_left)
-                                        # print('---')
-                                        # self.superarea[each].values[index] = -1
             # add n, m to possibility
                 self.fill_values_order(each)
                 # break
@@ -269,6 +259,20 @@ class Sudoku:
         # break
         # set_only_order()
         # update()
+    def run(self):
+        """Solve it."""
+        saftey_first = 0
+        first = 1
+        second = 0
+        while first != second:
+            first = sum(self.counts)
+            self.run_order()
+            second = sum(self.counts)
+            print(first, second)
+            saftey_first += 1
+            if saftey_first == 10:
+                print('safevty_first')
+                break
 
 
 def main():
@@ -305,7 +309,7 @@ def main():
     # print('\n')
     print(s.counts)
 
-    s.run_order()  #
+    s.run()  #
     # print(s.missing_areas)
     # print(s.counts)
     # print('Order:', s.get_order())
@@ -323,8 +327,8 @@ def main():
     #         assert b.v == int(h_test2[m].split()[n])
 
     # # create a TEST for display()
-    # s.display()
-    print(s.counts)
+    s.display()
+    # print(s.counts)
 
     #
     #

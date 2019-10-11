@@ -5,8 +5,18 @@
 - [x] horizontals
 - [x] superarea class
 - [x] horizontal/vertical class
-- [ ] run_order
-    - where to save the possibilities and how to modify those areas in the sudoku class
+- [x] run_order
+- [x] possibilities are saved in horizontals and verticals
+- [x] SuperArea.amount saves the amount of possibilities for the numbers
+- [x] Sudoku.counts saves the count of the used number
+    - Sudoku.get_order() returns the order of numbers by their presence in Sudoku
+- [x] fill_values_order updates the Sudoku
+    - SuperArea.amount
+    - Sudoku.counts
+
+- [ ]fill_values_order is called prittey often !! WHY?
+
+- [ ] speed up the algo !!!
 - [ ] final algo, test
 
 """
