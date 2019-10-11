@@ -5,15 +5,14 @@ from display_sudoku import display_sudoku, sudoku_71
 class Area:
     """One area of 81 areas in a sudoku."""
 
-    def __init__(self, n, m, v, exist, new=True):
+    def __init__(self, n, m, v, fix, new=True):
         """Initiale position, value."""
         self.n = n
         self.m = m
         self.v = v
         self.possibility = []
-        self.exist = exist
+        self.is_fix = fix
         self.is_new = new
-        # self.existing = []
 
 
 class SuperArea:
@@ -24,15 +23,14 @@ class SuperArea:
         self.upper_left = upper_left
         self.lower_right = lower_right
         self.values = []
-
-    # def is_not_nr(self):
-    #     return self.existing
+        self.counts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 class Horizontal:
     """Nine horizontal lines."""
 
     def __init__(self):
+        """Parameter of horizontal line."""
         self.areas = []
         self.values = []
 
@@ -47,6 +45,7 @@ class Vertical:
     """Nine vertical lines."""
 
     def __init__(self):
+        """Parameter of vertical line."""
         self.areas = []
         self.values = []
 
@@ -102,7 +101,7 @@ class Sudoku:
         """Display the horizontal lines in sudoku style."""
         for j, h in enumerate(self.horizontals):
             line = ''
-            for i, value in enumerate(h):
+            for i, value in enumerate(h.areas):
                 if not isinstance(value, int):
                     value = value.v
                 line += ' ' + str(value)
@@ -114,7 +113,7 @@ class Sudoku:
                 print('-------+-------+------')
         print()
 
-    def fill_superareas(self, n, m, val):
+    def setup_values_superareas(self, n, m, val):
         """Get a list of values in SuperAreas."""
         if n < 3 and m < 3:
             self.superarea[0].values.append(val)
@@ -135,7 +134,7 @@ class Sudoku:
         if n > 5 and m > 5:
             self.superarea[8].values.append(val)
 
-    def fill_values(self, horizontals):
+    def setup_values(self, horizontals):
         """Fill the sudoku with existing values and ZEROS."""
         for n, h in enumerate(horizontals):
             # run through m
@@ -154,7 +153,7 @@ class Sudoku:
                     Area(n, m, value, existing, new=new))
                 self.verticals[m].areas.append(
                     Area(n, m, value, existing, new=new))
-                self.fill_superareas(n, m, value)
+                self.setup_values_superareas(n, m, value)
         for i in range(9):
             self.horizontals[i].make_value_list()
             self.verticals[i].make_value_list()
@@ -183,6 +182,43 @@ class Sudoku:
         #         (self.superarea[this].upper_left[1],
         #          self.superarea[this].lower_right[1]))
 
+    def fill_values_order(self, each):
+        # print('fill_values_order')
+        # print(each)
+        for index, count in enumerate(self.superarea[each].counts):
+            number = index + 1
+            if count == 1:
+                self.superarea[each].counts[index] = 0
+                print('fill in:', number)
+                self.counts[index] -= 1
+
+                if number not in self.superarea[each].values:
+                    # print('In SuperArea', each, 'set number', number)
+                    hori_boundary, verti_boundery = self.get_boundary(each)
+                    # print(hori_boundary, verti_boundery)
+                    for n in range(hori_boundary, hori_boundary+3):
+                        if number not in self.horizontals[n].values:
+                            # print('n', n)
+                            for m in range(verti_boundery, verti_boundery+3):
+                                if not self.horizontals[n].areas[m].is_fix:
+                                    if number not in self.verticals[m].values:
+                                        # print('husdf')
+                                        # check and update !!
+                                        self.horizontals[n].areas[m].v = number
+                                        # print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
+                                        # self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility,
+                                        # self.superarea[each].values)
+
+                                        self.verticals[m].areas[n].v = number
+                                        # print('Vertical n,m,p --', self.verticals[m].areas[n].n,
+                                        # self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility,
+                                        # self.superarea[each].values[m], self.superarea[each].values[n])
+                                        index = (n-self.superarea[each].upper_left[0])*3+(
+                                            m-self.superarea[each].upper_left[1])
+                                        # print(self.superarea[each].upper_left)
+                                        # print('---')
+                                        self.superarea[each].values[index] = number
+
     def run_order(self):
         """
         Run through each SuperArea.
@@ -194,44 +230,45 @@ class Sudoku:
             for each in range(9):
                 # print('Area number:', each)
                 if number not in self.superarea[each].values:
-                    print('SuperArea', each, 'has no number', number)
+                    # print('SuperArea', each, 'has no number', number)
                     hori_boundary, verti_boundery = self.get_boundary(each)
                     # print(hori_boundary, verti_boundery)
                     for n in range(hori_boundary, hori_boundary+3):
                         if number not in self.horizontals[n].values:
-                            print('n', n)
+                            # print('n', n)
                             for m in range(verti_boundery, verti_boundery+3):
-                                if number not in self.verticals[m].values:
-                                    print('m', m)
-                                    self.horizontals[n].areas[m].v = -1
-                                    self.horizontals[n].areas[m].possibility.append(number)
-                                    print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
-                                          self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility)
+                                if not self.horizontals[n].areas[m].is_fix:
+                                    if number not in self.verticals[m].values:
+                                        # print('m', m)
+                                        # add posibilities for horizontal and vertical areas -> redudant
+                                        self.horizontals[n].areas[m].possibility.append(number)
+                                        self.verticals[m].areas[n].possibility.append(number)
+                                        self.superarea[each].counts[number-1] += 1
 
-                                    self.verticals[m].areas[n].v = -1
-                                    self.verticals[m].areas[n].possibility.append(number)
-                                    print('Vertical n,m,p --', self.verticals[m].areas[n].n,
-                                          self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility)
-                                    print('---')
-                                    # add n,m to possibility
+            # check and update !!
+                                        # self.horizontals[n].areas[m].v = -1
+                                        # print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
+                                        #       self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility,
+                                        #       self.superarea[each].values)
+                                        #
+                                        # self.verticals[m].areas[n].v = -1
+                                        # print('Vertical n,m,p --', self.verticals[m].areas[n].n,
+                                        #       self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility,
+                                        #       self.superarea[each].values[m], self.superarea[each].values[n])
+                                        # index = (n-self.superarea[each].upper_left[0])*3+(
+                                        #     m-self.superarea[each].upper_left[1])
+                                        # print(self.superarea[each].upper_left)
+                                        # print('---')
+                                        # self.superarea[each].values[index] = -1
+            # add n, m to possibility
+                self.fill_values_order(each)
+                # break
+            # break
 
-                        # for area in self.horizontals[n].areas:
-                        #     print(area.v)
-                        # for area in self.verticals[m].areas:
-                        #     print(area.v)
-                        #     print(area.v, i)
-                        # print('---')
-                    # for i in range(verti_boundery, verti_boundery+3):
-                    #     for area in self.verticals[i].areas:
-                        ...
-                        #     print(area.v, i)
-                        # print('---')
-
-                    # print('SuperArea', area, 'has no number: ', number)
-                break
-            break
-            # set_only_order()
-            # update()
+        # break
+        # break
+        # set_only_order()
+        # update()
 
 
 def main():
@@ -249,30 +286,73 @@ def main():
     h8 = '0 0 0 9 1 4 0 2 0'
     h9 = '0 0 2 0 0 0 0 4 6'
 
-    h_test = [h1, h2, h3, h4, h5, h6, h7, h8, h9]
+    h_test1 = [h1, h2, h3, h4, h5, h6, h7, h8, h9]
 
     s = Sudoku('medium')
     print(s.difficulty)
 
-    s.fill_values(h_test)
+    s.setup_values(h_test1)
 
     for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
         for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
-            # print('test:', n, m, a.v)
-            assert a.v == int(h_test[n].split()[m])
-            assert b.v == int(h_test[m].split()[n])
+            # print('test1:', n, m, a.v)
+            assert a.v == int(h_test1[n].split()[m])
+            assert b.v == int(h_test1[m].split()[n])
 
     # display_sudoku(sudoku_71())
     # # display(s.get_horizontals())
-    # s.display()
     # print(s.superareas)
     # print('\n')
-    s.run_order()
+    print(s.counts)
+
+    s.run_order()  #
     # print(s.missing_areas)
     # print(s.counts)
     # print('Order:', s.get_order())
     # for i in s.superarea:
     #     print(i.values)
+
+    #
+    #
+    # h3b = '-1 0 0 8 0 0 0 0 0'
+    # h_test2 = [h1, h2, h3b, h4, h5, h6, h7, h8, h9]
+    #
+    # for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
+    #     for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
+    #         assert a.v == int(h_test2[n].split()[m])
+    #         assert b.v == int(h_test2[m].split()[n])
+
+    # # create a TEST for display()
+    # s.display()
+    print(s.counts)
+
+    #
+    #
+    #
+    #
+    #
+    # for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
+    #     for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
+    #         if not a.is_fix and a.n < 3 and a.m < 3:
+    #             if len(a.possibility) < 5:
+    #                 print(a.possibility, ' ', a.n, a.m, ' - ', a.is_fix)
+    #
+    # print('count', s.superarea[0].counts)
+    # print('areaV', s.superarea[0].values)
+    #
+    #
+    #
+
+    # for number, count in enumerate(s.superarea[0].counts):
+    #     if count == 1:
+    #         print('fill in:', number+1)
+
+    # for i in s.superarea[0].counts:
+    #     print(i)
+    # for i in s.superarea:
+    #     print(i.values)
+    # print(i.upper_left)
+    # print(i.lower_right)
 
 
 if __name__ == "__main__":
