@@ -173,8 +173,8 @@ class Sudoku:
                 break
             counter += 1
             order.append(max_index+1)
-        print('order:', order)
-        print('count:', self.counts)
+        # print('order:', order)
+        # print('count:', self.counts)
         return order
 
     def get_boundary(self, this):
@@ -194,7 +194,7 @@ class Sudoku:
             number = index + 1
             if count == 1:
                 self.superarea[each].amount[index] = 0
-                print('fill in:', number)
+                print('fill in:', number, 'in SuperArea', each)
                 self.counts[index] += 1
 
                 if number not in self.superarea[each].values:
@@ -207,7 +207,7 @@ class Sudoku:
                             for m in range(verti_boundery, verti_boundery+3):
                                 if not self.horizontals[n].areas[m].is_fix:
                                     if number not in self.verticals[m].values:
-                                        # print('husdf')
+                                        # print('\t@', '(', m, ',', n, ')')
                                         # check and update !!
                                         self.horizontals[n].areas[m].v = number
                                         # print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
@@ -251,6 +251,7 @@ class Sudoku:
                                         self.superarea[each].amount[number-1] += 1
 
             # add n, m to possibility
+                # print('For the number:', number)
                 self.fill_values_order(each)
                 # break
             # break
@@ -261,18 +262,18 @@ class Sudoku:
         # update()
     def run(self):
         """Solve it."""
-        saftey_first = 0
+        # saftey_first = 0
         first = 1
         second = 0
         while first != second:
             first = sum(self.counts)
             self.run_order()
             second = sum(self.counts)
-            print(first, second)
-            saftey_first += 1
-            if saftey_first == 10:
-                print('safevty_first')
-                break
+            # print(first, second)
+            # saftey_first += 1
+            # if saftey_first == 10:
+            #     print('safevty_first')
+            #     break
 
 
 def main():
@@ -307,7 +308,7 @@ def main():
     # # display(s.get_horizontals())
     # print(s.superareas)
     # print('\n')
-    print(s.counts)
+    # print(s.counts)
 
     s.run()  #
     # print(s.missing_areas)
@@ -335,21 +336,17 @@ def main():
     #
     #
     #
-    # for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
-    #     for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
-    #         if not a.is_fix and a.n < 3 and a.m < 3:
-    #             if len(a.possibility) < 5:
-    #                 print(a.possibility, ' ', a.n, a.m, ' - ', a.is_fix)
-    #
-    # print('count', s.superarea[0].counts)
-    # print('areaV', s.superarea[0].values)
-    #
-    #
-    #
+    for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
+        for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
+            if not a.is_fix and a.n < 3 and a.m < 3:
+                if len(a.possibility) < 5:
+                    print(a.possibility, ' ', a.n, a.m, ' - ', a.is_fix)
 
-    # for number, count in enumerate(s.superarea[0].counts):
-    #     if count == 1:
-    #         print('fill in:', number+1)
+    print('count', s.superarea[0].amount)
+    print('areaV', s.superarea[0].values)
+
+    #
+    #
 
     # for i in s.superarea[0].counts:
     #     print(i)
