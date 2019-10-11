@@ -3,7 +3,10 @@
 ## TODO
 - [x] verticals
 - [x] horizontals
-- [ ] superarea
+- [x] superarea class
+- [x] horizontal/vertical class
+- [ ] run_order
+    - where to save the possibilities and how to modify those areas in the sudoku class
 - [ ] final algo, test
 
 """
