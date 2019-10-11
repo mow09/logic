@@ -52,9 +52,10 @@ class Vertical:
 
     def make_value_list(self):
         """Make a list of the values."""
-        if len(self.values) == 0:
-            for i in range(9):
-                self.values.append(self.areas[i].v)
+        if len(self.values) != 0:
+            self.values = []
+        for i in range(9):
+            self.values.append(self.areas[i].v)
 
 
 class Sudoku:
@@ -202,6 +203,17 @@ class Sudoku:
                             for m in range(verti_boundery, verti_boundery+3):
                                 if number not in self.verticals[m].values:
                                     print('m', m)
+                                    self.horizontals[n].areas[m].v = -1
+                                    self.horizontals[n].areas[m].possibility.append(number)
+                                    print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
+                                          self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility)
+
+                                    self.verticals[m].areas[n].v = -1
+                                    self.verticals[m].areas[n].possibility.append(number)
+                                    print('Vertical n,m,p --', self.verticals[m].areas[n].n,
+                                          self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility)
+                                    print('---')
+                                    # add n,m to possibility
 
                         # for area in self.horizontals[n].areas:
                         #     print(area.v)
@@ -218,6 +230,8 @@ class Sudoku:
                     # print('SuperArea', area, 'has no number: ', number)
                 break
             break
+            # set_only_order()
+            # update()
 
 
 def main():
