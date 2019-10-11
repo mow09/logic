@@ -51,20 +51,52 @@ linear areas: (left - right)
 
 ```python
 class Area:
-    # is a number between [1,..,9]
-    # exists 9x9 times
+    def __init__(self, n, m, v, fix, new=True):
+        self.possibility = []
+        self.is_fix = fix
+        self.is_new = new
+
+class SuperArea:
+    def __init__(self, upper_left, lower_right):
+        self.upper_left = upper_left
+        self.lower_right = lower_right
+        self.values = []
+        self.amount = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 class Horizontal:
-    # contains numbers from [1,..,9]
-    # exists 9 times
+    def __init__(self):
+        self.areas = []
+        self.values = []
+
+    def make_value_list(self):
+        ...
+
 class Vertical:
-    # contains numbers from [1,..,9]
-    # exists 9 times
-class Square:
-    # contains numbers from [1,..,9]
-    # exists 9 times
+    def __init__(self):
+        self.areas = []
+        self.values = []
+
+    def make_value_list(self):
+        ...
+
 class Sudoku:
-    # contains 9 x numbers from [1,..,9]
-    # exists 9 times
+    def __init__(self, difficulty):
+        """Set the difficulty."""
+        self.difficulty = difficulty
+        self.horizontals = [Horizontal()*9]
+        self.verticals = [Vertical()*9]
+        self.superarea = [SuperArea((n0, m0), (n3, m3))*9]
+        self.missing_areas = []
+        self.counts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    def display(self):
+    def setup_values_superareas(self, n, m, val):
+    def setup_values(self, horizontals):
+    def get_order(self):
+    def get_boundary(self, this):
+    def fill_values_order(self, each):
+    def run_order(self):
+    def run(self):
 ```
 ---
 
