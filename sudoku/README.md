@@ -161,3 +161,12 @@ Nummer (2) ist schneller in `display()`:
 ```
 
 ### numpy or list in list ?!
+
+### changing the init for AREA
+The area should be initialized once. Not manytime for
+1. horizontal
+2. verticals
+3. superare
+
+## TODO:
+get the list position [0;8] in SuperArea Area[i] with i, m, n

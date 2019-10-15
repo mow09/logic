@@ -342,6 +342,54 @@ class Sudoku:
             self.horizontals[i].make_value_list()
             self.verticals[i].make_value_list()
 
+    def add_possibilities(self, n, m, number, i):
+        self.horizontals[n].areas[m].possibility.append(number)
+        self.verticals[m].areas[n].possibility.append(number)
+        # print(self.horizontals[n].areas[m].possibility, self.verticals[m].areas[n].possibility)
+        # print((n), (m), self.horizontals[n].areas[m].possibility)
+        # if i > 0:
+        # print(self.superarea[i].areas[n*3+m])
+        self.superarea[i].amount[number-1] += 1
+        index = (m % 3)+3*(n % 3)
+        # print('Index of SuperareaListArea:', index)
+        self.superarea[i].areas[index].possibility.append(number)
+        # for area in self.superarea[i].areas:
+        #     if m == area.m and n == area.n:
+        #         area.possibility.append(number)
+        #         print(area.n, area.m, area.possibility)
+        #         print(n, m, self.superarea[i].areas[index].possibility)
+
+    def remove_possibilities(self, n, m, each):
+        self.missing_areas.remove((n, m))
+        print(n, m, self.horizontals[n].areas[m].possibility,
+              self.verticals[m].areas[n].possibility)
+        self.horizontals[n].areas[m].possibility = []
+        self.verticals[m].areas[n].possibility = []
+        index = (m % 3)+3*(n % 3)
+        self.superarea[each].areas[index].possibility = []
+        # for area in self.superarea[each].areas:
+        #     # print(area.n, area.m, area.possibility, each)
+        #     if m == area.m and n == area.n:
+        #         print(area)
+        #         area.possibility.remove
+        #         print('DELETE', area.n, area.m, self.superarea[each].areas[2].possibility, each)
+
+    def set_value(self, n, m, number, each):
+        index = (n-self.superarea[each].upper_left[0])*3+(
+            m-self.superarea[each].upper_left[1])
+
+        self.superarea[each].values[index] = number
+        self.superarea[each].areas[index].v = number
+        self.horizontals[n].areas[m].v = number
+        self.verticals[m].areas[n].v = number
+        self.superarea[each].areas[index].is_new = False
+        self.horizontals[n].areas[m].is_new = False
+        self.verticals[m].areas[n].is_new = False
+
+    def set_count_amount(self, each, index):
+        self.superarea[each].amount[index] = 0
+        self.counts[index] += 1
+
     def fill_values_order(self, each):
         # print('fill_values_order')
         # print(each)
@@ -349,11 +397,9 @@ class Sudoku:
         for index, count in enumerate(self.superarea[each].amount):
             number = index + 1
             if count == 1:
-                self.superarea[each].amount[index] = 0
                 print('fill in:', number, 'in SuperArea', each)
-                self.counts[index] += 1
-
                 if number not in self.superarea[each].values:
+                    self.set_count_amount(each, index)
                     # print('In SuperArea', each, 'set number', number)
                     hori_boundary, verti_boundery = self.get_boundary(each)
                     # print(hori_boundary, verti_boundery)
@@ -365,26 +411,23 @@ class Sudoku:
                                     if number not in self.verticals[m].values:
                                         # print('\t@', '(', m, ',', n, ')')
                                         # check and update !!
-                                        self.horizontals[n].areas[m].v = number
+
                                         # print('Horizont n,m,p --', self.horizontals[n].areas[m].n,
                                         # self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility,
                                         # self.superarea[each].values)
-
-                                        self.verticals[m].areas[n].v = number
+                                        self.set_value(n, m, number, each)
                                         # print("CHECKER - ", self.missing_areas)
                                         # print(len(self.missing_areas))
-                                        self.missing_areas.remove((n, m))
+                                        self.remove_possibilities(n, m, each)
 
                                         # print("CHECKER - ", self.missing_areas)
                                         # print(len(self.missing_areas))
                                         # print('Vertical n,m,p --', self.verticals[m].areas[n].n,
                                         # self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility,
                                         # self.superarea[each].values[m], self.superarea[each].values[n])
-                                        index = (n-self.superarea[each].upper_left[0])*3+(
-                                            m-self.superarea[each].upper_left[1])
+
                                         # print(self.superarea[each].upper_left)
                                         # print('---')
-                                        self.superarea[each].values[index] = number
 
     def run_order(self):
         """
@@ -399,12 +442,12 @@ class Sudoku:
         # return
         for number in self.get_order():
             # print('searched:', number)
-            for each in range(9):
-                self.superarea[each].amount[number-1] = 0
-                # print('Area number:', each)
-                if number not in self.superarea[each].values:
-                    # print('SuperArea', each, 'has no number', number)
-                    hori_boundary, verti_boundery = self.get_boundary(each)
+            for i in range(9):
+                self.superarea[i].amount[number-1] = 0
+                print('Area number:', i, self.superarea[i].values)
+                if number not in self.superarea[i].values:
+                    print('SuperArea', i, 'has no number', number)
+                    hori_boundary, verti_boundery = self.get_boundary(i)
                     # print(hori_boundary, verti_boundery)
                     for n in range(hori_boundary, hori_boundary+3):
                         if number not in self.horizontals[n].values:
@@ -413,15 +456,11 @@ class Sudoku:
                                 if not self.horizontals[n].areas[m].is_fix:
                                     if number not in self.verticals[m].values:
                                         # print('m', m)
-                                        self.horizontals[n].areas[m].possibility.append(number)
-                                        self.verticals[m].areas[n].possibility.append(number)
-                                        # print('test', each, number-1,
-                                        #       self.superarea[each].amount[number-1])
-                                        self.superarea[each].amount[number-1] += 1
+                                        self.add_possibilities(n, m, number, i)
 
                 # print('For the number:', number)
                 # print('---')
-                self.fill_values_order(each)
+                self.fill_values_order(i)
         self.make_value_list()
 
     def run(self):
@@ -470,19 +509,19 @@ def main():
     #
     s.run()  #
     #
-    s.display_superarea_amount()
-    #
-    s.display()
+    # s.display_superarea_amount()
+    # #
+    # s.display()
 
-    print('\t', s.horizontals[0].values)
-    print('\t', s.horizontals[1].values)
-    print('\t', s.horizontals[2].values)
-    print()
-    print('\t', s.verticals[8].values)
-    print('\t', s.verticals[7].values)
-    print('\t', s.verticals[6].values)
+    # print('\t', s.horizontals[0].values)
+    # print('\t', s.horizontals[1].values)
+    # print('\t', s.horizontals[2].values)
+    # print()
+    # print('\t', s.verticals[8].values)
+    # print('\t', s.verticals[7].values)
+    # print('\t', s.verticals[6].values)
 
-    s.display_superarea_amount()
+    # s.display_superarea_amount()
 
     for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
         for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
@@ -491,13 +530,27 @@ def main():
                 # print(a.n, a.m, a.possibility)
                 # print(a.n, a.m, a.possibility)
 
-    # for index in range(9):
-    #     print('Superarea:', s.superarea[index].amount)
-
-        # print(s.superarea.value)
-        # if not a.is_new and a.n < 3 and a.m < 3:
-        #     if len(a.possibility) < 5:
-        #         print(a.possibility, ' ', a.n, a.m, ' - ', a.is_fix)
+    for index in range(1):
+        print('Superarea Values:', s.superarea[index].values)
+        print('Superarea Amount of each', s.superarea[index].amount)
+        hori_boundary, verti_boundery = s.get_boundary(index)
+        print('Superarea Upper_Left', hori_boundary, verti_boundery)
+        for i, area in enumerate(s.superarea[index].areas):
+            if area.is_new:
+                print('Area posibilities:', f'of position {i} on',
+                      f'({area.n}, {area.m})', area.possibility)
+    # for superarea in s.superarea:
+    #     # print(superarea.amount)
+    #     for area in superarea.areas:
+    #         if not area.is_fix and area.n < 3 and area.m < 3:
+    #             print('area-vale', superarea.values)
+    #             # print(area.is_new)
+    #             print(area.possibility, ' ', area.n, area.m, ' - ', area.is_fix)
+    #     if not a.is_new and a.n < 3 and a.m < 3:
+    #         # check if there are values in superarea which just have one n or m:
+    #         # if len(a.possibility) < 5:
+    #         ...
+        # print(a.possibility, ' ', a.n, a.m, ' - ', a.is_fix)
 
     # print()
     # s.display_horizontals(0)
