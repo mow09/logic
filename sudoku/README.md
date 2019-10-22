@@ -169,4 +169,6 @@ The area should be initialized once. Not manytime for
 3. superare
 
 ## TODO:
-get the list position [0;8] in SuperArea Area[i] with i, m, n
+- [x] remove possibilities if value is set with ORDER (first run in while)
+    - [ ] check the used way. too often -  maybe another
+    - [ ] implement timing for each step and counter for too often e.g. called functions `.func()` 

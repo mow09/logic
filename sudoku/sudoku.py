@@ -14,6 +14,25 @@ class Area:
         self.is_fix = fix
         self.is_new = new
 
+    def __str__(self):
+        """Show functions."""
+        return f"""\n\tcall n: {self.n}, m: {self.m}, v: {self.v}\n\
+            is_fix: {self.is_fix}, is_new: {self.is_new}\n\
+                possibility: {self.possibility}\n"""
+
+    def __repr__(self):
+        """Show results."""
+        return f"n: {self.n}, \nm: {self.m}, \nv: {self.v}, \nis_fix: {self.is_fix}, \nis_new: {self.is_new}, \npossibility: {self.possibility}"
+
+    # def __repr__():
+    #     """Show it for developer."""
+    #
+    #
+    # def __str__():
+    #     """Show it for consumer."""
+
+    # def func(self):
+
 
 class SuperArea:
     """One SuperArea contains nine Areas."""
@@ -359,20 +378,25 @@ class Sudoku:
         #         print(area.n, area.m, area.possibility)
         #         print(n, m, self.superarea[i].areas[index].possibility)
 
-    def remove_possibilities(self, n, m, each):
-        self.missing_areas.remove((n, m))
-        print(n, m, self.horizontals[n].areas[m].possibility,
-              self.verticals[m].areas[n].possibility)
+    def remove_possibilities(self, n, m, area_nr, clear=True):
+        """Remove the possibilities for one area."""
+        if clear:
+            self.missing_areas.remove((n, m))
+        # print('Removed in', n, m, self.horizontals[n].areas[m].possibility,
+        #       self.verticals[m].areas[n].possibility)
         self.horizontals[n].areas[m].possibility = []
         self.verticals[m].areas[n].possibility = []
         index = (m % 3)+3*(n % 3)
-        self.superarea[each].areas[index].possibility = []
-        # for area in self.superarea[each].areas:
-        #     # print(area.n, area.m, area.possibility, each)
-        #     if m == area.m and n == area.n:
-        #         print(area)
-        #         area.possibility.remove
-        #         print('DELETE', area.n, area.m, self.superarea[each].areas[2].possibility, each)
+        self.superarea[area_nr].areas[index].possibility = []
+
+    def remove_all_possibilities(self):
+        """Remove the possibilities for all areas."""
+        for index in range(9):
+            # print('Superarea:', index)
+            for area in self.superarea[index].areas:
+                # print('check area')
+                # print(area.m, area.n)
+                self.remove_possibilities(area.n, area.m, index, clear=False)
 
     def set_value(self, n, m, number, each):
         index = (n-self.superarea[each].upper_left[0])*3+(
@@ -416,18 +440,9 @@ class Sudoku:
                                         # self.horizontals[n].areas[m].m, self.horizontals[n].areas[m].possibility,
                                         # self.superarea[each].values)
                                         self.set_value(n, m, number, each)
-                                        # print("CHECKER - ", self.missing_areas)
-                                        # print(len(self.missing_areas))
+
+                                        # Remove the
                                         self.remove_possibilities(n, m, each)
-
-                                        # print("CHECKER - ", self.missing_areas)
-                                        # print(len(self.missing_areas))
-                                        # print('Vertical n,m,p --', self.verticals[m].areas[n].n,
-                                        # self.verticals[m].areas[n].m, self.verticals[m].areas[n].possibility,
-                                        # self.superarea[each].values[m], self.superarea[each].values[n])
-
-                                        # print(self.superarea[each].upper_left)
-                                        # print('---')
 
     def run_order(self):
         """
@@ -435,6 +450,8 @@ class Sudoku:
 
         Check horizontl- and verticals.
         """
+        # clear possibilities
+        self.remove_all_possibilities()
         # self.display_horizontals()
         # self.display_verticals()
         # print(self.missing_areas)
@@ -444,9 +461,9 @@ class Sudoku:
             # print('searched:', number)
             for i in range(9):
                 self.superarea[i].amount[number-1] = 0
-                print('Area number:', i, self.superarea[i].values)
+                # print('Area number:', i, self.superarea[i].values)
                 if number not in self.superarea[i].values:
-                    print('SuperArea', i, 'has no number', number)
+                    # print('SuperArea', i, 'has no number', number)
                     hori_boundary, verti_boundery = self.get_boundary(i)
                     # print(hori_boundary, verti_boundery)
                     for n in range(hori_boundary, hori_boundary+3):
@@ -477,10 +494,36 @@ class Sudoku:
             print(i)
 
 
+def poiting_pair(numbers, superarea, index):
+    """Find poitning pairs."""
+    print(numbers, 'is the set of SupAr:', index, '\n', superarea)
+    print(superarea.amount)
+    # for i in numbers:
+    #     print('check if', i+1,)
+    for a in superarea.amount:
+        if a / 2 == 1:
+            print('Amount of', a)
+
+    for area in superarea.areas:
+        # all not set areas:
+        # if not area.is_fix and area.is_new:
+        if area.is_new:
+            print(index, '- poissibilities:', area.possibility)
+            # print(area, '\n')
+            print(area.is_new)
+            print(f"({area.n},{area.m})\n")
+            # print('Area posibilities:', f'of position {i} on',
+            #       f'({area.n}, {area.m})', area.possibility)
+            # [all_numbers.append(i) for i in area.possibility]
+
+    print(superarea.areas[8].possibility)
+    print(superarea.areas[5].possibility)
+
+
 def main():
     """Run this in direct call."""
     # display(sudoku_71())
-    print('main():')
+    print('main(): Ω Ω Ω - z')
 
     h1 = '9 6 0 0 0 0 2 0 0'
     h2 = '0 7 0 5 9 2 0 0 0'
@@ -530,15 +573,20 @@ def main():
                 # print(a.n, a.m, a.possibility)
                 # print(a.n, a.m, a.possibility)
 
-    for index in range(1):
+    for index in range(2, 3):
+        all_numbers = []
         print('Superarea Values:', s.superarea[index].values)
         print('Superarea Amount of each', s.superarea[index].amount)
         hori_boundary, verti_boundery = s.get_boundary(index)
         print('Superarea Upper_Left', hori_boundary, verti_boundery)
         for i, area in enumerate(s.superarea[index].areas):
             if area.is_new:
-                print('Area posibilities:', f'of position {i} on',
+                print('Area posibilities:\n\t', f'of {i} on',
                       f'({area.n}, {area.m})', area.possibility)
+                [all_numbers.append(i) for i in area.possibility]
+
+        poiting_pair(set(all_numbers), s.superarea[index], index)
+
     # for superarea in s.superarea:
     #     # print(superarea.amount)
     #     for area in superarea.areas:
