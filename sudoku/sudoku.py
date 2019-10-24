@@ -17,7 +17,7 @@ class Area:
     def __str__(self):
         """Show functions."""
         return f"""\n\tcall n: {self.n}, m: {self.m}, v: {self.v}\n\
-            is_fix: {self.is_fix}, is_new: {self.is_new}\n\
+            is_fix: {self.is_fix}, \n\tis_new: {self.is_new}\n\
                 possibility: {self.possibility}\n"""
 
     def __repr__(self):
@@ -42,9 +42,14 @@ class SuperArea:
         self.upper_left = upper_left
         self.lower_right = lower_right
         self.areas = []
+        # contains existing-numbers in the expressive position for this class
         self.values = []
         # returns how often it is
         self.amount = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    def __repr__(self):
+        """Show results."""
+        return f"SuperArea()\n\tupper_left: {self.upper_left}, \n\tlower_right: {self.lower_right}, \n\tareas: List(Area()), \n\tvalues: {self.values}, \n\tamount: {self.amount}"
 
 
 class Horizontal:
@@ -53,6 +58,7 @@ class Horizontal:
     def __init__(self):
         """Parameter of horizontal line."""
         self.areas = []
+        # contains existing-numbers in the expressive position for this class
         self.values = []
 
     def make_value_list(self):
@@ -69,6 +75,7 @@ class Vertical:
     def __init__(self):
         """Parameter of vertical line."""
         self.areas = []
+        # contains existing-numbers in the expressive position for this class
         self.values = []
 
     def make_value_list(self):
@@ -414,12 +421,13 @@ class Sudoku:
         self.superarea[each].amount[index] = 0
         self.counts[index] += 1
 
-    def fill_values_order(self, each):
-        # print('fill_values_order')
+    def fill_values_by_amount(self, each):
+        # print('fill_values_by_amount')
         # print(each)
         # print('amount:', self.superarea[each].amount)
         for index, count in enumerate(self.superarea[each].amount):
             number = index + 1
+            # Ih the number is just once in the possibilities - fill it in
             if count == 1:
                 print('fill in:', number, 'in SuperArea', each)
                 if number not in self.superarea[each].values:
@@ -477,8 +485,148 @@ class Sudoku:
 
                 # print('For the number:', number)
                 # print('---')
-                self.fill_values_order(i)
+                self.fill_values_by_amount(i)
         self.make_value_list()
+
+    def clean_amount(self, supers, number, norm, m=False):
+        """Decrement the amount if that number."""
+        print('\t\t\tClean the amount')
+        print('\t\t\tIn Superarea', supers, 'for the number', number)
+        for i in supers:
+            # print('this is the amount - BUT just decrement it if n or m is on this number')
+            # print(self.superarea[i].amount)
+            for area in(self.superarea[i].areas):
+                if area.is_new:
+                    if m:
+                        if area.m == norm:
+                            if number in area.possibility:
+                                print('M:', area.possibility,
+                                      self.superarea[i].amount)
+                                self.superarea[i].amount[number-1] -= 1
+                                print(self.superarea[i].amount)
+                                # delete the amount of that position/number
+                                #
+                    else:
+                        if area.n == norm:
+                            if number in area.possibility:
+                                print('N:', area.possibility,
+                                      self.superarea[i].amount)
+                                self.superarea[i].amount[number-1] -= 1
+                                print(self.superarea[i].amount)
+                                # delete the amount of that position/number
+
+    def clean_n_m(self, numbers, index):
+        """Clean n or m. Depending on the pointer."""
+        print('\t\tClean n m')
+        print('\t\t', numbers, 'in SuperArea', index)
+        for key in numbers:
+            # area_nr = index - 1
+            if numbers[key][0] == numbers[key][2]:
+                print('IT is N')
+                # is it left
+                if index in [0, 3, 6]:
+                    print('clean horizontal in Superarea', index+1, index +
+                          2, 'the number', key, 'for n', numbers[key][0])
+                    self.clean_amount([index+1, index+2], key, numbers[key][0])
+
+                # is it mid
+                if index in [1, 4, 7]:
+                    print('clean horizontal in Superarea',  index-1, index +
+                          1, 'the number', key, 'for n', numbers[key][0])
+                    self.clean_amount([index-1, index+1], key, numbers[key][0])
+                # is it right
+                if index in [2, 5, 8]:
+                    print('clean horizontal in Superarea', index-2, index -
+                          1, 'the number', key, 'for n', numbers[key][0])
+                    self.clean_amount([index-2, index-1], key, numbers[key][0])
+            else:
+                print('IT is M')
+                # is it top
+                if index in [0, 1, 2]:
+                    print('clean vertical in Superarea', index+1*3, index +
+                          2*3, 'the number', key, 'for m', numbers[key][1])
+                    self.clean_amount([index+1*3, index+2*3], key, numbers[key][1], True)
+                # is it mid
+                if index in [3, 4, 5]:
+                    print('clean vertical in Superarea', index-1*3, index +
+                          1*3, 'the number', key, 'for m', numbers[key][1])
+                    self.clean_amount([index-1*3, index+1*3], key, numbers[key][1], True)
+                # is it down
+                if index in [6, 7, 8]:
+                    print('clean vertical in Superarea', index-2*3, index -
+                          1*3, 'the number', key, 'for m', numbers[key][1])
+                    self.clean_amount([index-2*3, index-1*3], key, numbers[key][1], True)
+        print()
+
+    def pointing_pair(self):
+        """Find poitning pairs."""
+        print('Pointing Pair')
+        for index in range(9):
+            print('\nSuperarea', index)
+            #     # print(numbers, 'is the set of SupAr:', index, '\n', self.superarea[index])
+            #     print(self.superarea[index].amount)
+            #     print(self.superarea[index].values)
+            #     # for i in numbers:
+            #     #     print('check if', i+1,)
+            #     for a in self.superarea[index].amount:
+            #         if a % 2 == 0:
+            #             print(f'In SA {index} even amount of', a)
+            #
+            #     for area in self.superarea[index].areas:
+            #         # all not set areas:
+            #         # if not area.is_fix and area.is_new:
+            #         if area.is_new:
+            #             print(index, '- poissibilities:', area.possibility)
+            #             # print(area, '\n')
+            #             print(area.is_new)
+            #             print(f"({area.n},{area.m})\n")
+            #             # print('Area posibilities:', f'of position {i} on',
+            #             #       f'({area.n}, {area.m})', area.possibility)
+            #             # [all_numbers.append(i) for i in area.possibility]
+            #
+            #     # print(self.superarea[index].areas[8].possibility)
+            #     # print(self.superarea[index].areas[5].possibility)
+            #
+            print('placed values:\n', self.superarea[index].values)
+            # this dictionary will be filled for each number with n and m
+            # -> every odd is an n and every eaven is an m !!
+            numbers = {}
+            # check pointing pair for each number which is not in that superarea.
+            for i in range(9):
+                number = i+1
+                # if it is not in that self.superarea[index].
+                if i not in self.superarea[index].values:
+                    # check if the number is in the area.possibility
+                    # and controlle m and n
+                    # print('\nChecking for number', i, 'if it can be a pointing pair in SuperArea', index)
+                    print('\tCheck number', number)
+                    for area in self.superarea[index].areas:
+                        # just controlle the not placed areas.
+                        if area.is_new:
+                            if self.superarea[index].amount[i] / 2 == 1:
+                                if i+1 in area.possibility:
+                                    if number not in numbers:
+                                        numbers[number] = []
+                                    numbers[number].append(area.n)
+                                    numbers[number].append(area.m)
+                                    # print('The amount is exaactly 2! for', number)
+                                    # print(f"({area.n},{area.m})\n")
+                    # print(numbers)
+                    if len(numbers) > 0:
+                        # clean nm
+                        self.clean_n_m(numbers, index)
+                        del numbers[number]
+                    # print(numbers)
+                # if numbers
+            # for each in self.superarea[index]:
+            #     fill_values_by_amount(each)
+
+            # print(self.superarea[index].amount)
+            # for a in self.superarea[index].amount:
+            #     if a % 2 == 0:
+            #         print(f'In SA {index} even amount of', a)
+        for i in range(9):
+            self.fill_values_by_amount(i)
 
     def run(self):
         """Solve it."""
@@ -493,31 +641,7 @@ class Sudoku:
             i += 1
             print(i)
 
-
-def poiting_pair(numbers, superarea, index):
-    """Find poitning pairs."""
-    print(numbers, 'is the set of SupAr:', index, '\n', superarea)
-    print(superarea.amount)
-    # for i in numbers:
-    #     print('check if', i+1,)
-    for a in superarea.amount:
-        if a / 2 == 1:
-            print('Amount of', a)
-
-    for area in superarea.areas:
-        # all not set areas:
-        # if not area.is_fix and area.is_new:
-        if area.is_new:
-            print(index, '- poissibilities:', area.possibility)
-            # print(area, '\n')
-            print(area.is_new)
-            print(f"({area.n},{area.m})\n")
-            # print('Area posibilities:', f'of position {i} on',
-            #       f'({area.n}, {area.m})', area.possibility)
-            # [all_numbers.append(i) for i in area.possibility]
-
-    print(superarea.areas[8].possibility)
-    print(superarea.areas[5].possibility)
+        self.pointing_pair()
 
 
 def main():
@@ -554,7 +678,8 @@ def main():
     #
     # s.display_superarea_amount()
     # #
-    # s.display()
+    s.display()
+    print('\n\tIt works in a way that it fills in one right but not clean - multi fill\n\n\t check the SIX!\t\tand its nines... .9\n\n')
 
     # print('\t', s.horizontals[0].values)
     # print('\t', s.horizontals[1].values)
@@ -573,19 +698,19 @@ def main():
                 # print(a.n, a.m, a.possibility)
                 # print(a.n, a.m, a.possibility)
 
-    for index in range(2, 3):
-        all_numbers = []
-        print('Superarea Values:', s.superarea[index].values)
-        print('Superarea Amount of each', s.superarea[index].amount)
-        hori_boundary, verti_boundery = s.get_boundary(index)
-        print('Superarea Upper_Left', hori_boundary, verti_boundery)
-        for i, area in enumerate(s.superarea[index].areas):
-            if area.is_new:
-                print('Area posibilities:\n\t', f'of {i} on',
-                      f'({area.n}, {area.m})', area.possibility)
-                [all_numbers.append(i) for i in area.possibility]
+    # for index in range(2, 3):
+    #     all_numbers = []
+    #     print('Superarea Values:', s.superarea[index].values)
+    #     print('Superarea Amount of each', s.superarea[index].amount)
+    #     hori_boundary, verti_boundery = s.get_boundary(index)
+    #     print('Superarea Upper_Left', hori_boundary, verti_boundery)
+    #     for i, area in enumerate(s.superarea[index].areas):
+    #         if area.is_new:
+    #             print('Area posibilities:\n\t', f'of {i} on',
+    #                   f'({area.n}, {area.m})', area.possibility)
+    #             [all_numbers.append(i) for i in area.possibility]
 
-        poiting_pair(set(all_numbers), s.superarea[index], index)
+        # poiting_pair(set(all_numbers), s.superarea[index], index)
 
     # for superarea in s.superarea:
     #     # print(superarea.amount)
