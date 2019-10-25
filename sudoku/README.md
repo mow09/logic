@@ -171,4 +171,6 @@ The area should be initialized once. Not manytime for
 ## TODO:
 - [x] remove possibilities if value is set with ORDER (first run in while)
     - [ ] check the used way. too often -  maybe another
-    - [ ] implement timing for each step and counter for too often e.g. called functions `.func()` 
+    - [ ] implement timing for each step and counter for too often e.g. called functions `.func()`
+
+## Think About:
