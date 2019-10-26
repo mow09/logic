@@ -378,7 +378,7 @@ class Sudoku:
         """Get info about the sudoku at this time."""
         print('\nINFOBOARD:')
         print('\tSUPERAREA:')
-        print('\t\tSuperarea\tSum\tMissing')
+        print('\t\tSuperarea\tPlaced\tMissing')
         missing_values_all = [i+1 for i in range(9)]*9
         missing_values_all_h = [i+1 for i in range(9)]*9
         missing_values_all_v = [i+1 for i in range(9)]*9
@@ -393,7 +393,7 @@ class Sudoku:
                     missing_values_all.remove(value)
             print(f'\t\t\t{i}\t{counter}\t{missing_values}')
         print('\tHORIZONTAL:')
-        print('\t\t\tn\tSum\tMissing')
+        print('\t\t\tn\tPlaced\tMissing')
         for i, hori in enumerate(self.horizontals):
             # missing_values_all = [i+1 for i in range(9)]*9
             missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -406,7 +406,7 @@ class Sudoku:
                     missing_values_all_h.remove(value)
             print(f'\t\t\t{i}\t{counter}\t{missing_values}')
         print('\tVERTICALS:')
-        print('\t\t\tn\tSum\tMissing')
+        print('\t\t\tn\tPlaced\tMissing')
         for i, verti in enumerate(self.verticals):
             # missing_values_all = [i+1 for i in range(9)]*9
             missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -520,8 +520,8 @@ class Sudoku:
             # Ih the number is just once in the possibilities - fill it in
             if count == 1:
                 print('\n\n\t\t\t', 'fill in:', number, 'in SuperArea', each)
-                self.display()
-                self.info()
+                # self.display()
+                # self.info()
                 if number not in self.superarea[each].values:
                     self.set_count_amount(each, index)
                     # print('In SuperArea', each, 'set number', number)
@@ -699,6 +699,7 @@ class Sudoku:
 
     def run_order_loop(self):
         """Run order/Find direct and hiden targets."""
+        print('Run Order Loop')
         first = 1
         second = 0
         i = 0
@@ -710,7 +711,9 @@ class Sudoku:
             i += 1
             print(i)
 
-    def check_inf(self):
+    def check_info(self):
+        """Display some information."""
+        # self.display()
         for i, superarea in enumerate(self.superarea):
             if i == 2:
                 print("S", superarea.values)  # , superarea.amount)
@@ -741,15 +744,43 @@ class Sudoku:
                         print(j, area.possibility, '- possibilities', area.is_new)
         print()
 
+    def info_superarea(self):
+        """Display all possibilities."""
+        for i, superarea in enumerate(self.superarea):
+            print(f'In SUPERAREA {i}:')
+            for j, area in enumerate(superarea.areas):
+                print(f'\t\tIn AREA {j} posibilities', area.possibility)
+            print()
+
+    def info_values(self):
+        """Display all values for superarea, horizontal, vertical."""
+        for i, superarea in enumerate(self.superarea):
+            print(f'In SUPERAREA {i}:')
+            for j, area in enumerate(superarea.areas):
+                print(f'\t\tIn AREA {j} posibilities', area.possibility)
+            print()
+
     def run(self):
         """Solve it."""
         self.run_order_loop()
 
         self.pointing_pair()
 
-        self.check_inf()
+        self.display()
+
+        self.check_info()
 
         self.run_order_loop()
+
+        self.check_info()
+
+        self.info_superarea()
+
+        self.info()
+        self.display()
+
+        self.display_verticals()
+        self.display_horizontals()
 
 
 def main():
@@ -786,8 +817,8 @@ def main():
     #
     # s.display_superarea_amount()
     # #
-    s.display()
-    s.info()
+    # s.display()
+    # s.info()
     # print('\n\tIt works in a way that it fills in one right but not clean - multi fill\n\n\t check the SIX!\t\tand its nines... .9\n\n')
 
     # print('\t', s.horizontals[0].values)
@@ -839,9 +870,9 @@ def main():
     # s.display_superarea(2)
     # s.display_verticals(8)
 
-    print('\n\n\tTODO: in SA 3 is obvious a 6 but not placed. same for the 6 in SA 6 - after the first one... ')
-    print('\n\tTODO: Not even complecated - OBVIOUS - hidden target')
-    print('\n\tTODO: CHECK and split run_order...')
+    print('\n\n\t   TODO: ')
+    print('\t\t Problem in possibilities')
+    print('\n\t\t in SA3 is in A4, A6 a 6 - which cannot be with an 6 in SA0 A1')
     print('\n\n')
 
 
