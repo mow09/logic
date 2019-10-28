@@ -174,7 +174,7 @@ class Sudoku:
                 if not isinstance(area, int):
                     value = area.v
                 if value == 0:
-                    line += ' ' + u'\U00011894'
+                    line += ' ' + '-'
                 else:
                     if area.is_fix:
                         line += ' ' + str(value)
@@ -186,7 +186,8 @@ class Sudoku:
             print(line)
             if j in [2, 5]:
                 print('\t\t\t-------+-------+-------')
-        print()
+        print('')
+        print('\t\t\t\t\t\t\t',  'V', ' is old')
         print('\t\t\t\t\t\t\t', u'\U00011894', ' is missing')
         print('\t\t\t\t\t\t\t', '.V', 'is entered')
         print()
@@ -239,7 +240,7 @@ class Sudoku:
             # h = self.verticals[spec]
             print(dict_store)
             for key in dict_store:
-                print('\t', 'Area', key)
+                # print('\t', 'Area', key)
                 line = '\t\t\n\n'
                 for i, area in enumerate(dict_store[key].areas):
                     if area.v == 0:
@@ -358,7 +359,7 @@ class Sudoku:
         self.horizontals[n].areas[m].possibility.append(number)
         self.superarea[i].amount[number-1] += 1
 
-    def remove_possibilities(self, n, m, area_nr, clear=True):
+    def remove_possibilities(self, n, m, superarea_nr, clear=True):
         """Remove the possibilities for one area."""
         if clear:
             self.missing_areas.remove((n, m))
@@ -367,7 +368,7 @@ class Sudoku:
         self.horizontals[n].areas[m].possibility = []
         self.verticals[m].areas[n].possibility = []
         index = (m % 3)+3*(n % 3)
-        self.superarea[area_nr].areas[index].possibility = []
+        self.superarea[superarea_nr].areas[index].possibility = []
 
     def remove_all_possibilities(self):
         """Remove the possibilities for all areas."""
@@ -382,13 +383,14 @@ class Sudoku:
     def set_value(self, n, m, number, each):
         index = (n-self.superarea[each].upper_left[0])*3+(
             m-self.superarea[each].upper_left[1])
-        print('#', number, 'in', each, 'with', n, m)
-        print('\tArea Possibilities', self.superarea[each].areas[index].possibility)
+        print('\t#', number, 'in SuperArea', each, 'with (n,m)', n, m)
+        print('\tArea Possibilities', self.superarea[each].areas[index].possibility, '\n')
         if number in self.superarea[each].areas[index].possibility:
-            if each == 6:
-                print('\n\t\t\t\t################set value info for Area', each)
-            if number == 9:
-                print('its a nine')
+            # if each == 6:
+            #     print('\n\t\t\t\t################set value info for Area', each)
+            # if number == 9:
+            #     print('its a nine')
+            #
             self.superarea[each].values[index] = number
             self.superarea[each].areas[index].v = number
             self.horizontals[n].areas[m].v = number
@@ -398,6 +400,15 @@ class Sudoku:
             self.superarea[each].areas[index].is_new = False
             self.horizontals[n].areas[m].is_new = False
             self.verticals[m].areas[n].is_new = False
+
+            for area_h, area_v in zip(self.horizontals[n].areas, self.verticals[m].areas):
+                if number in area_h.possibility:
+                    area_h.possibility.remove(number)
+                if number in area_v.possibility:
+                    area_v.possibility.remove(number)
+
+            # after setting value
+            # you need to clean the possibilities in any other area with that n or m
 
     def set_count_amount(self, each, index):
         self.superarea[each].amount[index] = 0
@@ -435,7 +446,7 @@ class Sudoku:
                     missing_values_all_h.remove(value)
             print(f'\t\t\t{i}\t{counter}\t{missing_values}')
         print('\tVERTICALS:')
-        print('\t\t\tn\tPlaced\tMissing')
+        print('\t\t\tm\tPlaced\tMissing')
         for i, verti in enumerate(self.verticals):
             # missing_values_all = [i+1 for i in range(9)]*9
             missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -617,7 +628,7 @@ class Sudoku:
 
     def clean_amount(self, supers, number, norm, m=False):
         """Decrement the amount if that number."""
-        print('\t\t\tClean the amount')
+        print('\n\t\t\tClean the amount')
         print('\t\t\tIn Superarea', supers, 'for the number', number)
         for i in supers:
             # print('this is the amount - BUT just decrement it if n or m is on this number')
@@ -695,7 +706,9 @@ class Sudoku:
         for index in range(9):
             if index in [0, 3, 6]:
 
-                print('\nSuperarea', index)
+                print('\n######\n\n', f'SuperArea {index}', '\n')
+
+                # print('\nSuperarea', index)
                 print('placed values:\n', self.superarea[index].values)
             # this dictionary will be filled for each number with n and m
             # -> every odd is an n and every eaven is an m !!
@@ -711,10 +724,10 @@ class Sudoku:
                     # print('\tCheck number', number)
                     print()
                     for area in self.superarea[index].areas:
-                        if area.m in [0, 1, 2]:  # now fix needed columns
+                        if area.m in zip([0, 1, 2]):  # now fix needed columns
                             print()
-                            print('######\n\n######\n\n', self.superarea[index], '\n\n',
-                                  f'Area ({area.n}, {area.m})', '\n\n\t', area.possibility, '######\n\n######\n\n')
+                            print(f'\tArea ({area.n}, {area.m})', '\n\n\t',
+                                  area.possibility)  # , '######\n\n######\n\n')
                             print()
                             # just controlle the not placed areas.
                         if area.is_new:
@@ -782,13 +795,21 @@ class Sudoku:
                         print(j, area.possibility, '- possibilities', area.is_new)
         print()
 
-    def info_superarea(self):
+    def info_superarea(self, spec=False):
         """Display all possibilities."""
-        for i, superarea in enumerate(self.superarea):
-            print(f'In SUPERAREA {i}:')
-            for j, area in enumerate(superarea.areas):
-                print(f'\t\tIn AREA {j} posibilities', area.possibility)
-            print()
+        if not spec:
+            for i, superarea in enumerate(self.superarea):
+                print(f'In SUPERAREA {i}: - {superarea.amount}')
+                for j, area in enumerate(superarea.areas):
+                    print(f'\t\tIn AREA {j} posibilities', area.possibility)
+                print()
+        else:
+            for i, superarea in enumerate(self.superarea):
+                if i in spec:
+                    print(f'In SUPERAREA {i}: - {superarea.amount}')
+                    for j, area in enumerate(superarea.areas):
+                        print(f'\t\tIn AREA {j} posibilities', area.possibility)
+                    print()
 
     def info_values(self):
         """Display all values for superarea, horizontal, vertical."""
@@ -813,10 +834,10 @@ class Sudoku:
         # self.check_info()
         self.run_order_loop()
         self.display_verticals([0, 1, 2])
+        self.info_superarea([0, 1, 2])
 
-        # self.check_info()
+        self.info()
         #
-        # self.info_superarea()
         #
         # self.info()
         # self.display()
@@ -887,6 +908,7 @@ def main():
     # print('\t\t Problem in possibilities')
     # print('\n\t\t in SA3 is in A4, A6 a 6 - which cannot be with an 6 in SA0 A4')
     # print('\n\n')
+    s.display()
 
 
 if __name__ == "__main__":
