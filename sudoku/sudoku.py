@@ -1,8 +1,35 @@
 """Sudoku AI."""
+# from functools import wraps
+
+import dis
+
+# def func_info(f):
+#     """Display - function name."""
+#     @wraps(f)
+#     def info(*args, **kwargs):
+#         print('---> name it', f.__name__)
+#         f()
+#     return info()
 
 
 class Area:
     """One area of 81 areas in a sudoku."""
+
+    # def display(self, f):
+    #     # debug tool
+    #     """Display the Decorator."""
+    #     @wraps(f)
+    #     def possibility(*args, **kwargs):
+    #         print('\n\n\tfunctoinname:', f.__name__)  # functionname
+    #         f(*args, **kwargs)
+    #         print(self.superarea[0].areas[1].possibility)
+    #         print(self.superarea[3].areas[4].possibility)
+    #         print(self.superarea[3].areas[6].possibility)
+    #         print()
+    #
+    #         # return f(*args, **kwargs)
+    #         # if check_possibility:
+    #     return possibility()
 
     def __init__(self, n, m, v, fix, new=True):
         """Initiale position, value."""
@@ -17,7 +44,7 @@ class Area:
 
     def __str__(self):
         """Show functions."""
-        return f"""\n\tcall n: {self.n}, m: {self.m}, v: {self.v}\n\
+        return f"""\nArea\tcall n: {self.n}, m: {self.m}, v: {self.v}\n\
             is_fix: {self.is_fix}, \n\tis_new: {self.is_new}\n\
                 possibility: {self.possibility}\n"""
 
@@ -191,9 +218,9 @@ class Sudoku:
             print(line)
             print()
 
-    def display_verticals(self, spec=10):
+    def display_verticals(self, spec=False):
         """Display the vertical lines."""
-        if spec == 10:
+        if not spec:
             for h in self.horizontals:
                 line = ''
                 for i, area in enumerate(h.areas):
@@ -205,16 +232,23 @@ class Sudoku:
                         line += ' '
                 print(line)
         else:
-            h = self.verticals[spec]
-            line = '\t\t\n'
-            for i, area in enumerate(h.areas):
-                if area.v == 0:
-                    line += u'\t\t\U00011894\n'
-                else:
-                    line += '\t\t' + str(area.v) + '\n'
-                if i in [2, 5]:
-                    line += '\n'
-            print(line+'\n')
+            # stores the key for #verticals and their possibilities
+            dict_store = {}
+            for key in spec:
+                dict_store[key] = self.verticals[key]
+            # h = self.verticals[spec]
+            print(dict_store)
+            for key in dict_store:
+                print('\t', 'Area', key)
+                line = '\t\t\n\n'
+                for i, area in enumerate(dict_store[key].areas):
+                    if area.v == 0:
+                        line += u'\t\t\U00011894' + f'\t{area.possibility}\n'
+                    else:
+                        line += '\t\t' + str(area.v) + '\n'
+                    if i in [2, 5]:
+                        line += '\n'
+                print(line+'\n\n')
 
     def display_superarea(self, spec):
         """Display one superarea lines."""
@@ -319,13 +353,8 @@ class Sudoku:
             self.horizontals[i].make_value_list()
             self.verticals[i].make_value_list()
 
+    # @func_info
     def add_possibilities(self, n, m, number, i):
-        # print('ADD_POSSIBILITIES')
-        # if not self.horizontals[n].areas[m].is_new:
-        #     print('FUCK',)
-        # if not self.verticals[m].areas[n].is_new:
-        #     print('FUCK')
-
         self.horizontals[n].areas[m].possibility.append(number)
         self.superarea[i].amount[number-1] += 1
 
@@ -509,6 +538,7 @@ class Sudoku:
         # print(missing_values_all)
         print()
 
+    # @func_info
     def fill_values_by_amount(self, each):
         """Check the amount of possibilities and fill it if it is one."""
         # print('fill_values_by_amount')
@@ -546,7 +576,7 @@ class Sudoku:
 
                                         # self.
         # self.display()
-
+    # @func_info
     def run_order(self):
         """
         Run through each SuperArea.
@@ -663,8 +693,10 @@ class Sudoku:
         """Find poitning pairs."""
         print('Pointing Pair')
         for index in range(9):
-            print('\nSuperarea', index)
-            print('placed values:\n', self.superarea[index].values)
+            if index in [0, 3, 6]:
+
+                print('\nSuperarea', index)
+                print('placed values:\n', self.superarea[index].values)
             # this dictionary will be filled for each number with n and m
             # -> every odd is an n and every eaven is an m !!
             numbers = {}
@@ -676,9 +708,15 @@ class Sudoku:
                     # check if the number is in the area.possibility
                     # and controlle m and n
                     # print('\nChecking for number', i, 'if it can be a pointing pair in SuperArea', index)
-                    print('\tCheck number', number)
+                    # print('\tCheck number', number)
+                    print()
                     for area in self.superarea[index].areas:
-                        # just controlle the not placed areas.
+                        if area.m in [0, 1, 2]:  # now fix needed columns
+                            print()
+                            print('######\n\n######\n\n', self.superarea[index], '\n\n',
+                                  f'Area ({area.n}, {area.m})', '\n\n\t', area.possibility, '######\n\n######\n\n')
+                            print()
+                            # just controlle the not placed areas.
                         if area.is_new:
                             if self.superarea[index].amount[i] / 2 == 1:
                                 if i+1 in area.possibility:
@@ -762,25 +800,32 @@ class Sudoku:
 
     def run(self):
         """Solve it."""
+
+        self.display_verticals([0, 1, 2])
         self.run_order_loop()
 
+        self.display_verticals([0, 1, 2])
         self.pointing_pair()
 
-        self.display()
+        # self.display()
 
-        self.check_info()
-
+        self.display_verticals([0, 1, 2])
+        # self.check_info()
         self.run_order_loop()
+        self.display_verticals([0, 1, 2])
 
-        self.check_info()
+        # self.check_info()
+        #
+        # self.info_superarea()
+        #
+        # self.info()
+        # self.display()
 
-        self.info_superarea()
-
-        self.info()
-        self.display()
-
-        self.display_verticals()
-        self.display_horizontals()
+        # self.display_verticals([0, 1, 2])
+        # self.display_verticals()
+        # self.display_verticals()
+        # self.display_horizontals(0)
+        # self.display_superarea(2)
 
 
 def main():
@@ -838,42 +883,10 @@ def main():
                 # print(a.n, a.m, a.possibility)
                 # print(a.n, a.m, a.possibility)
 
-    # for index in range(2, 3):
-    #     all_numbers = []
-    #     print('Superarea Values:', s.superarea[index].values)
-    #     print('Superarea Amount of each', s.superarea[index].amount)
-    #     hori_boundary, verti_boundery = s.get_boundary(index)
-    #     print('Superarea Upper_Left', hori_boundary, verti_boundery)
-    #     for i, area in enumerate(s.superarea[index].areas):
-    #         if area.is_new:
-    #             print('Area posibilities:\n\t', f'of {i} on',
-    #                   f'({area.n}, {area.m})', area.possibility)
-    #             [all_numbers.append(i) for i in area.possibility]
-
-        # poiting_pair(set(all_numbers), s.superarea[index], index)
-
-    # for superarea in s.superarea:
-    #     # print(superarea.amount)
-    #     for area in superarea.areas:
-    #         if not area.is_fix and area.n < 3 and area.m < 3:
-    #             print('area-vale', superarea.values)
-    #             # print(area.is_new)
-    #             print(area.possibility, ' ', area.n, area.m, ' - ', area.is_fix)
-    #     if not a.is_new and a.n < 3 and a.m < 3:
-    #         # check if there are values in superarea which just have one n or m:
-    #         # if len(a.possibility) < 5:
-    #         ...
-        # print(a.possibility, ' ', a.n, a.m, ' - ', a.is_fix)
-
-    # print()
-    # s.display_horizontals(0)
-    # s.display_superarea(2)
-    # s.display_verticals(8)
-
-    print('\n\n\t   TODO: ')
-    print('\t\t Problem in possibilities')
-    print('\n\t\t in SA3 is in A4, A6 a 6 - which cannot be with an 6 in SA0 A1')
-    print('\n\n')
+    # print('\n\n\t   TODO: ')
+    # print('\t\t Problem in possibilities')
+    # print('\n\t\t in SA3 is in A4, A6 a 6 - which cannot be with an 6 in SA0 A4')
+    # print('\n\n')
 
 
 if __name__ == "__main__":
