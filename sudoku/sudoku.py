@@ -344,7 +344,7 @@ class Sudoku:
 
     def get_order(self):
         """Return a list sorted by amount."""
-        print('GET_ORDER')
+        # print('GET_ORDER')
         holder = self.counts.copy()
         order = list()
         counter = 0
@@ -376,9 +376,13 @@ class Sudoku:
             self.horizontals[i].make_value_list()
             self.verticals[i].make_value_list()
 
-    def get_placed_values(self, n, m):
+    def get_placed_values(self, area):
         """Return placed values focusing an Area."""
-        return self.horizontals[n].values + self.verticals[m].values
+        # index = (n-self.superarea[each].upper_left[0])*3+(
+        #     m-self.superarea[each].upper_left[1])
+        return set(self.horizontals[area.n].values +
+                   self.verticals[area.m].values +
+                   self.superarea[area.sa].values)
 
     def add_amount(self):
         """Add the amount of the possibility of number in a SuperArea."""
@@ -398,15 +402,25 @@ class Sudoku:
         """Add the possibilities for each Area - setup."""
         for superarea in self.superarea:
             for area in superarea.areas:
+                if area.n == 8 and area.m == 0:
+                    print()
+                    print()
+                    print('runs in setup')
+                    print()
                 if not area.is_fix and area.is_new:
                     # print('HELL YEA', area.is_new, area.possibility)
                     # print('\t', self.horizontals[area.n], '\n\t', self.verticals[area.m])
                     # print('\t', area.n, area.m)
+                    print('IS NEW', area.is_new)
                     for number in range(1, 10):
-                        if number not in self.get_placed_values(area.n, area.m):
+                        if number not in self.get_placed_values(area):
+                            if area.n == 6 and area.m == 0:
+                                print((self.get_placed_values(area)))
                             area.possibility.append(number)
+                            if area.n == 6 and area.m == 0:
+                                print(area.possibility)
 
-            print('ADD_POSS', superarea)
+            # print('ADD_POSS', superarea)
 
     def remove_possibilities(self, n, m, superarea_nr, clear=True):
         """Remove the possibilities for one area."""
@@ -609,7 +623,7 @@ class Sudoku:
             number = index + 1
             # Ih the number is just once in the possibilities - fill it in
             if count == 1:
-                print('\n\n\t\t\t', 'fill in:', number, 'in SuperArea', each)
+                # print('\n\n\t\t\t', 'fill in:', number, 'in SuperArea', each)
                 # self.display()
                 # self.info()
                 if number not in self.superarea[each].values:
@@ -670,6 +684,7 @@ class Sudoku:
                             superarea.values[index] = number
                             self.horizontals[area.n].values[area.m] = number
                             self.verticals[area.m].values[area.n] = number
+
                             # set value in all 3
                             self.missing_areas.remove((area.n, area.m))
 
@@ -682,8 +697,8 @@ class Sudoku:
                                     area_v.possibility.remove(number)
                                     self.superarea[area_v.sa].amount[number-1] -= 1
 
-                                if i == 2:
-                                    print(superarea)
+                                # if i == 2:
+                                #     print(superarea)
 
         #     # print('Area number:', i, self.superarea[i].values)
         #     if number not in self.superarea[i].values:
@@ -709,8 +724,8 @@ class Sudoku:
 
     def clean_amount(self, supers, number, norm, m=False):
         """Decrement the amount if that number."""
-        print('\n\t\t\tClean the amount')
-        print('\t\t\tIn Superarea', supers, 'for the number', number)
+        # print('\n\t\t\tClean the amount')
+        # print('\t\t\tIn Superarea', supers, 'for the number', number)
         for i in supers:
             # print('this is the amount - BUT just decrement it if n or m is on this number')
             # print(self.superarea[i].amount)
@@ -719,65 +734,65 @@ class Sudoku:
                     if m:
                         if area.m == norm:
                             if number in area.possibility:
-                                print('M:Ω', area.possibility,
-                                      self.superarea[i].amount)
+                                # print('M:Ω', area.possibility,
+                                #       self.superarea[i].amount)
                                 self.superarea[i].amount[number-1] -= 1
                                 area.possibility.remove(number)
-                                print('M:', area.possibility,
-                                      self.superarea[i].amount)
+                                # print('M:', area.possibility,
+                                #       self.superarea[i].amount)
                                 # delete the amount of that position/number
                                 #
                     else:
                         if area.n == norm:
                             if number in area.possibility:
-                                print('N:Ω', area.possibility,
-                                      self.superarea[i].amount)
+                                # print('N:Ω', area.possibility,
+                                #       self.superarea[i].amount)
                                 self.superarea[i].amount[number-1] -= 1
                                 area.possibility.remove(number)
-                                print('N:', area.possibility,
-                                      self.superarea[i].amount)
+                                # print('N:', area.possibility,
+                                #       self.superarea[i].amount)
                                 # delete the amount of that position/number
 
     def clean_n_m(self, numbers, index):
         """Clean n or m. Depending on the pointer."""
-        print('\t\tClean n m')
-        print('\t\t', numbers, 'in SuperArea', index)
+        # print('\t\tClean n m')
+        # print('\t\t', numbers, 'in SuperArea', index)
         for key in numbers:
             # area_nr = index - 1
             if numbers[key][0] == numbers[key][2]:
-                print('IT is N')
+                # print('IT is N')
                 # is it left
                 if index in [0, 3, 6]:
-                    print('clean horizontal in Superarea', index+1, index +
-                          2, 'the number', key, 'for n', numbers[key][0])
+                    # print('clean horizontal in Superarea', index+1, index +
+                    #       2, 'the number', key, 'for n', numbers[key][0])
                     self.clean_amount([index+1, index+2], key, numbers[key][0])
 
                 # is it mid
                 if index in [1, 4, 7]:
-                    print('clean horizontal in Superarea',  index-1, index +
-                          1, 'the number', key, 'for n', numbers[key][0])
+                    # print('clean horizontal in Superarea',  index-1, index +
+                    #       1, 'the number', key, 'for n', numbers[key][0])
                     self.clean_amount([index-1, index+1], key, numbers[key][0])
                 # is it right
                 if index in [2, 5, 8]:
-                    print('clean horizontal in Superarea', index-2, index -
-                          1, 'the number', key, 'for n', numbers[key][0])
+                    # print('clean horizontal in Superarea', index-2, index -
+                    #       1, 'the number', key, 'for n', numbers[key][0])
                     self.clean_amount([index-2, index-1], key, numbers[key][0])
             else:
-                print('IT is M')
+                # print('IT is M')
                 # is it top
                 if index in [0, 1, 2]:
-                    print('clean vertical in Superarea', index+1*3, index +
-                          2*3, 'the number', key, 'for m', numbers[key][1])
+                    # print('clean vertical in Superarea', index+1*3, index +
+                    #       2*3, 'the number', key, 'for m', numbers[key][1])
                     self.clean_amount([index+1*3, index+2*3], key, numbers[key][1], True)
                 # is it mid
                 if index in [3, 4, 5]:
-                    print('clean vertical in Superarea', index-1*3, index +
-                          1*3, 'the number', key, 'for m', numbers[key][1])
+                    # print('clean vertical in Superarea', index-1*3, index +
+                    #       1*3, 'the number', key, 'for m', numbers[key][1])
                     self.clean_amount([index-1*3, index+1*3], key, numbers[key][1], True)
                 # is it down
                 if index in [6, 7, 8]:
-                    print('clean vertical in Superarea', index-2*3, index -
-                          1*3, 'the number', key, 'for m', numbers[key][1])
+                    # print('clean vertical in Superarea', index-2*3, index -
+                    #       1*3, 'the number', key, 'for m', numbers[key][1])
                     self.clean_amount([index-2*3, index-1*3], key, numbers[key][1], True)
         print()
 
@@ -785,32 +800,25 @@ class Sudoku:
         """Find poitning pairs."""
         print('Pointing Pair')
         for index in range(9):
-            if index in [0, 3, 6]:
+            # if index in [0, 3, 6]:
 
-                print('\n######\n\n', f'SuperArea {index}', '\n')
+                # print('\n######\n\n', f'SuperArea {index}', '\n')
 
                 # print('\nSuperarea', index)
-                print('placed values:\n', self.superarea[index].values)
-            # this dictionary will be filled for each number with n and m
-            # -> every odd is an n and every eaven is an m !!
+                # print('placed values:\n', self.superarea[index].values)
+                # this dictionary will be filled for each number with n and m
+                # -> every odd is an n and every eaven is an m !!
             numbers = {}
             # check pointing pair for each number which is not in that superarea.
             for i in range(9):
                 number = i+1
                 # if it is not in that self.superarea[index].
-                if i not in self.superarea[index].values:
+                if number not in self.superarea[index].values:
                     # check if the number is in the area.possibility
                     # and controlle m and n
                     # print('\nChecking for number', i, 'if it can be a pointing pair in SuperArea', index)
                     # print('\tCheck number', number)
-                    print()
                     for area in self.superarea[index].areas:
-                        if area.m in zip([0, 1, 2]):  # now fix needed columns
-                            print()
-                            print(f'\tArea ({area.n}, {area.m})', '\n\n\t',
-                                  area.possibility)  # , '######\n\n######\n\n')
-                            print()
-                            # just controlle the not placed areas.
                         if area.is_new:
                             if self.superarea[index].amount[i] / 2 == 1:
                                 if i+1 in area.possibility:
@@ -826,8 +834,8 @@ class Sudoku:
                         self.clean_n_m(numbers, index)
                         del numbers[number]
 
-        for i in range(9):
-            self.fill_values_by_amount(i)
+        # for i in range(9):
+        #     self.fill_values_by_amount(i)
 
     def run_target_loop(self):
         """Run order/Find direct and hiden targets."""
@@ -902,16 +910,18 @@ class Sudoku:
 
     def run(self):
         """Solve it."""
-        self.info()
+        # self.info()
         self.run_target_loop()
         self.info()
+        self.display()
         # self.check_info()
+        self.display_verticals([0, 1, 2, 3, 4, 5, 6, 7, 8])
         # self.display_verticals([0, 1, 2])
         self.display()
-        # self.display_verticals([0, 1, 2])
         self.pointing_pair()
-        self.info()
-        self.run_target_loop()
+        self.display_verticals([0, 1, 2])
+        # self.info()
+        # self.run_target_loop()
         # self.info()
         # # self.display()
         #
