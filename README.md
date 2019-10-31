@@ -1,1 +1,1 @@
-# SLIM SUDOKU
+# LOGIC for AI - simple IQ
