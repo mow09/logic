@@ -20,11 +20,11 @@ end   | (2,2) | (2,5) | (2,8) |  (5,3)| (5,5) | (5,8) | (8,3) | (8,3)| (8,8)
 
 ### Horizontal
 Horizontals are from
-`(n, 0) to (n, 8)` with `n={0,1...,8}`.
+`(n, 0) to (n, 8)` with `n = {0,1...,8}`.
 `n` is also the id of the horizontal.
 ### Vertical
 Verticals are from
-`(1, m) to (8, m)` with `m={0,1...,8}`.
+`(1, m) to (8, m)` with `m = {0,1...,8}`.
 `m` is also the id of the vertical.
 
 ### Sudoku
