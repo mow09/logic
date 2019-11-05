@@ -750,6 +750,7 @@ class Sudoku:
     def run(self):
         """Solve it."""
         # self.info()
+        self.display()
         self.run_target_loop()
         self.info()
         self.display()

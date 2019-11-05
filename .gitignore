@@ -50,3 +50,8 @@ coverage.xml
 docs/_build/
 notebook.ipynb
 .ipynb_checkpoints/
+
+# notebooks
+README2.md
+display_sudoku.py
+sudoku.py
