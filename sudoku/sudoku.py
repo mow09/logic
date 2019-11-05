@@ -12,7 +12,7 @@ class Area:
         self.m = m
         self.v = v
         self.sa = sa
-        self.possibility = []
+        self.possibilities = []
         self.is_fix = fix
         self.is_new = new
 
@@ -20,11 +20,11 @@ class Area:
         """Show functions."""
         return f"""\nArea\tcall n: {self.n}, m: {self.m}, v: {self.v}\n\
             is_fix: {self.is_fix}, \n\tis_new: {self.is_new}\n\
-                possibility: {self.possibility}\n"""
+                possibilities: {self.possibilities}\n"""
 
     def __repr__(self):
         """Show results."""
-        return f"n: {self.n}, \nm: {self.m}, \nv: {self.v}, \nis_fix: {self.is_fix}, \nis_new: {self.is_new}, \npossibility: {self.possibility}"
+        return f"n: {self.n}, \nm: {self.m}, \nv: {self.v}, \nis_fix: {self.is_fix}, \nis_new: {self.is_new}, \npossibilities: {self.possibilities}"
 
 
 class SuperArea:
@@ -39,7 +39,7 @@ class SuperArea:
         # contains existing-numbers in the expressive position for this class
         self.values = []
         # returns how often it is
-        self.amount = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.amount = [9, 9, 9, 9, 9, 9, 9, 9, 9]
 
     def __repr__(self):
         """Show results."""
@@ -55,6 +55,7 @@ class Horizontal:
         self.areas = []
         # contains existing-numbers in the expressive position for this class
         self.values = []
+        self.amount = [9, 9, 9, 9, 9, 9, 9, 9, 9]
 
     def make_value_list(self):
         """Make a list of the values."""
@@ -77,6 +78,7 @@ class Vertical:
         self.areas = []
         # contains existing-numbers in the expressive position for this class
         self.values = []
+        self.amount = [9, 9, 9, 9, 9, 9, 9, 9, 9]
 
     def make_value_list(self):
         """Make a list of the values."""
@@ -116,15 +118,15 @@ class Sudoku:
                           Vertical(),
                           Vertical(),
                           Vertical()]
-        self.superarea = [SuperArea((0, 0), (2, 2)),
-                          SuperArea((0, 3), (2, 5)),
-                          SuperArea((0, 6), (2, 8)),
-                          SuperArea((3, 0), (5, 2)),
-                          SuperArea((3, 3), (5, 5)),
-                          SuperArea((3, 6), (5, 8)),
-                          SuperArea((6, 0), (8, 2)),
-                          SuperArea((6, 3), (8, 5)),
-                          SuperArea((6, 6), (8, 8))]
+        self.superareas = [SuperArea((0, 0), (2, 2)),
+                           SuperArea((0, 3), (2, 5)),
+                           SuperArea((0, 6), (2, 8)),
+                           SuperArea((3, 0), (5, 2)),
+                           SuperArea((3, 3), (5, 5)),
+                           SuperArea((3, 6), (5, 8)),
+                           SuperArea((6, 0), (8, 2)),
+                           SuperArea((6, 3), (8, 5)),
+                           SuperArea((6, 6), (8, 8))]
         self.missing_areas = []
         self.counts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -134,7 +136,7 @@ class Sudoku:
         print('\t      1  2  3  4  5  6  7  8  9')
         for index in range(9):
             line = '['
-            for c, i in enumerate(self.superarea[index].amount):
+            for c, i in enumerate(self.superareas[index].amount):
                 if i == 0:
                     line += ' '
                 else:
@@ -226,7 +228,7 @@ class Sudoku:
                 line = '\t\t\n\n'
                 for i, area in enumerate(dict_store[key].areas):
                     if area.v == 0:
-                        line += u'\t\t\U00011894' + f'\t{area.possibility}\n'
+                        line += u'\t\t\U00011894' + f'\t{area.possibilities}\n'
                     else:
                         line += '\t\t' + str(area.v) + '\n'
                     if i in [2, 5]:
@@ -235,7 +237,7 @@ class Sudoku:
 
     def display_superarea(self, spec):
         """Display one superarea lines."""
-        h = self.superarea[spec]
+        h = self.superareas[spec]
         line = '\t'
         for i, area in enumerate(h.areas):
             if area.v == 0:
@@ -250,41 +252,131 @@ class Sudoku:
         """Get a list of values in SuperAreas."""
         print('SETUP_VALUES_SUPERAREAS')
         if n < 3 and m < 3:
-            self.superarea[0].values.append(val)
-            self.superarea[0].areas.append(area_set)
+            self.superareas[0].values.append(val)
+            self.superareas[0].areas.append(area_set)
             area_set.sa = 0
         if n < 3 and m > 2 and m < 6:
-            self.superarea[1].values.append(val)
-            self.superarea[1].areas.append(area_set)
+            self.superareas[1].values.append(val)
+            self.superareas[1].areas.append(area_set)
             area_set.sa = 1
         if n < 3 and m > 5:
-            self.superarea[2].values.append(val)
-            self.superarea[2].areas.append(area_set)
+            self.superareas[2].values.append(val)
+            self.superareas[2].areas.append(area_set)
             area_set.sa = 2
         if n > 2 and n < 6 and m < 3:
-            self.superarea[3].values.append(val)
-            self.superarea[3].areas.append(area_set)
+            self.superareas[3].values.append(val)
+            self.superareas[3].areas.append(area_set)
             area_set.sa = 3
         if n > 2 and n < 6 and m > 2 and m < 6:
-            self.superarea[4].values.append(val)
-            self.superarea[4].areas.append(area_set)
+            self.superareas[4].values.append(val)
+            self.superareas[4].areas.append(area_set)
             area_set.sa = 4
         if n > 2 and n < 6 and m > 5:
-            self.superarea[5].values.append(val)
-            self.superarea[5].areas.append(area_set)
+            self.superareas[5].values.append(val)
+            self.superareas[5].areas.append(area_set)
             area_set.sa = 5
         if n > 5 and m < 3:
-            self.superarea[6].values.append(val)
-            self.superarea[6].areas.append(area_set)
+            self.superareas[6].values.append(val)
+            self.superareas[6].areas.append(area_set)
             area_set.sa = 6
         if n > 5 and m > 2 and m < 6:
-            self.superarea[7].values.append(val)
-            self.superarea[7].areas.append(area_set)
+            self.superareas[7].values.append(val)
+            self.superareas[7].areas.append(area_set)
             area_set.sa = 7
         if n > 5 and m > 5:
-            self.superarea[8].values.append(val)
-            self.superarea[8].areas.append(area_set)
+            self.superareas[8].values.append(val)
+            self.superareas[8].areas.append(area_set)
             area_set.sa = 8
+
+    def get_order(self):
+        """Return a list sorted by amount."""
+        # print('GET_ORDER')
+        holder = self.counts.copy()
+        order = list()
+        counter = 0
+        while sum(holder) > 0:
+            max_value = max(holder)
+            max_index = holder.index(max_value)
+            holder[max_index] = 0
+            if counter > 20:
+                break
+            counter += 1
+            order.append(max_index+1)
+        # print('order:', order)
+        # print('count:', self.counts)
+        return order
+
+    def get_boundary(self, this):
+        """Bounderies for horizontal- and verticals by SuperAreas."""
+        # print('GET_BOUDARY')
+        return (self.superareas[this].upper_left[0],
+                self.superareas[this].upper_left[1])
+
+    def make_value_list(self):
+        print('MAKE_VALUE_LIST')
+        for i in range(9):
+            self.horizontals[i].make_value_list()
+            self.verticals[i].make_value_list()
+
+    def get_placed_values(self, area):
+        """Return placed values focusing an Area."""
+        return set(self.horizontals[area.n].values +
+                   self.verticals[area.m].values +
+                   self.superareas[area.sa].values)
+
+    def add_amount(self):
+        """Add the amount of the possibilities of number in a SuperArea."""
+        for superarea in self.superareas:
+            for number in range(1, 10):
+                # counter = 0
+                for area in superarea.areas:
+                    if number in area.possibilities:
+                        if number not in superarea.values:
+                            superarea.amount[number-1] += 1
+
+    def add_possibilities(self):
+        """Add the possibilities for each Area - setup."""
+        for superarea in self.superareas:
+            for area in superarea.areas:
+                if area.n == 8 and area.m == 0:
+                    print()
+                    print()
+                    print('runs in setup')
+                    print()
+                if not area.is_fix and area.is_new:
+                    print('IS NEW', area.is_new)
+                    for number in range(1, 10):
+                        if number not in self.get_placed_values(area):
+                            if area.n == 6 and area.m == 0:
+                                print((self.get_placed_values(area)))
+                            area.possibilities.append(number)
+                            if area.n == 6 and area.m == 0:
+                                print(area.possibilities)
+
+    def set_value(self, n, m, number, each):
+        """Set number in spacific position for SA,H,V - setup."""
+        index = (n-self.superareas[each].upper_left[0])*3+(
+            m-self.superareas[each].upper_left[1])
+        print('\t#', number, 'in SuperArea', each, 'with (n,m)', n, m)
+        print('\tArea Possibilities',
+              self.superareas[each].areas[index].possibilities, '\n')
+        if number in self.superareas[each].areas[index].possibilities:
+            self.superareas[each].values[index] = number
+            self.superareas[each].areas[index].v = number
+            self.horizontals[n].areas[m].v = number
+            self.horizontals[n].values[m] = number
+            self.verticals[m].areas[n].v = number
+            self.verticals[m].values[n] = number
+            self.superareas[each].areas[index].is_new = False
+            self.horizontals[n].areas[m].is_new = False
+            self.verticals[m].areas[n].is_new = False
+
+            for area_h, area_v in zip(self.horizontals[n].areas,
+                                      self.verticals[m].areas):
+                if number in area_h.possibilities:
+                    area_h.possibilities.remove(number)
+                if number in area_v.possibilities:
+                    area_v.possibilities.remove(number)
 
     def setup_values(self, horizontals):
         """Fill the sudoku with existing values and ZEROS."""
@@ -315,96 +407,6 @@ class Sudoku:
         self.add_possibilities()
         self.add_amount()
 
-    def get_order(self):
-        """Return a list sorted by amount."""
-        # print('GET_ORDER')
-        holder = self.counts.copy()
-        order = list()
-        counter = 0
-        while sum(holder) > 0:
-            max_value = max(holder)
-            max_index = holder.index(max_value)
-            holder[max_index] = 0
-            if counter > 20:
-                break
-            counter += 1
-            order.append(max_index+1)
-        # print('order:', order)
-        # print('count:', self.counts)
-        return order
-
-    def get_boundary(self, this):
-        """Bounderies for horizontal- and verticals by SuperAreas."""
-        # print('GET_BOUDARY')
-        return (self.superarea[this].upper_left[0],
-                self.superarea[this].upper_left[1])
-
-    def make_value_list(self):
-        print('MAKE_VALUE_LIST')
-        for i in range(9):
-            self.horizontals[i].make_value_list()
-            self.verticals[i].make_value_list()
-
-    def get_placed_values(self, area):
-        """Return placed values focusing an Area."""
-        return set(self.horizontals[area.n].values +
-                   self.verticals[area.m].values +
-                   self.superarea[area.sa].values)
-
-    def add_amount(self):
-        """Add the amount of the possibility of number in a SuperArea."""
-        for superarea in self.superarea:
-            for number in range(1, 10):
-                # counter = 0
-                for area in superarea.areas:
-                    if number in area.possibility:
-                        if number not in superarea.values:
-                            superarea.amount[number-1] += 1
-
-    def add_possibilities(self):
-        """Add the possibilities for each Area - setup."""
-        for superarea in self.superarea:
-            for area in superarea.areas:
-                if area.n == 8 and area.m == 0:
-                    print()
-                    print()
-                    print('runs in setup')
-                    print()
-                if not area.is_fix and area.is_new:
-                    print('IS NEW', area.is_new)
-                    for number in range(1, 10):
-                        if number not in self.get_placed_values(area):
-                            if area.n == 6 and area.m == 0:
-                                print((self.get_placed_values(area)))
-                            area.possibility.append(number)
-                            if area.n == 6 and area.m == 0:
-                                print(area.possibility)
-
-    def set_value(self, n, m, number, each):
-        """Set number in spacific position for SA,H,V - setup."""
-        index = (n-self.superarea[each].upper_left[0])*3+(
-            m-self.superarea[each].upper_left[1])
-        print('\t#', number, 'in SuperArea', each, 'with (n,m)', n, m)
-        print('\tArea Possibilities',
-              self.superarea[each].areas[index].possibility, '\n')
-        if number in self.superarea[each].areas[index].possibility:
-            self.superarea[each].values[index] = number
-            self.superarea[each].areas[index].v = number
-            self.horizontals[n].areas[m].v = number
-            self.horizontals[n].values[m] = number
-            self.verticals[m].areas[n].v = number
-            self.verticals[m].values[n] = number
-            self.superarea[each].areas[index].is_new = False
-            self.horizontals[n].areas[m].is_new = False
-            self.verticals[m].areas[n].is_new = False
-
-            for area_h, area_v in zip(self.horizontals[n].areas,
-                                      self.verticals[m].areas):
-                if number in area_h.possibility:
-                    area_h.possibility.remove(number)
-                if number in area_v.possibility:
-                    area_v.possibility.remove(number)
-
     def info(self):
         """Get info about the sudoku at this time."""
         print('\nINFOBOARD:')
@@ -413,7 +415,7 @@ class Sudoku:
         missing_values_all = [i+1 for i in range(9)]*9
         missing_values_all_h = [i+1 for i in range(9)]*9
         missing_values_all_v = [i+1 for i in range(9)]*9
-        for i, superarea in enumerate(self.superarea):
+        for i, superarea in enumerate(self.superareas):
             missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
             counter = 0
             for value in superarea.values:
@@ -549,16 +551,16 @@ class Sudoku:
         print('\n\n###\n\tREDESIGNED TARGET\n')
         for number in self.get_order():
             # print('searched:', number)
-            for i, superarea in enumerate(self.superarea):
-                # self.superarea[i].amount[number-1] = 0
+            for i, superarea in enumerate(self.superareas):
+                # self.superareas[i].amount[number-1] = 0
                 if superarea.amount[number-1] == 1:
                     # print(number, '-', superarea.amount[number-1])
                     for area in superarea.areas:
-                        if number in area.possibility:
+                        if number in area.possibilities:
                             index = (area.n-superarea.upper_left[0])*3+(
                                 area.m-superarea.upper_left[1])
                             # delete all possibilities
-                            area.possibility = []
+                            area.possibilities = []
                             area.is_new = False
                             area.v = number
                             # set amount
@@ -572,36 +574,36 @@ class Sudoku:
 
                             # clean all areas in n and m and if in also the number
                             for area_h, area_v in zip(self.horizontals[area.n].areas, self.verticals[area.m].areas):
-                                if number in area_h.possibility:
-                                    area_h.possibility.remove(number)
-                                    self.superarea[area_h.sa].amount[number-1] -= 1
-                                if number in area_h.possibility:
-                                    area_v.possibility.remove(number)
-                                    self.superarea[area_v.sa].amount[number-1] -= 1
+                                if number in area_h.possibilities:
+                                    area_h.possibilities.remove(number)
+                                    self.superareas[area_h.sa].amount[number-1] -= 1
+                                if number in area_h.possibilities:
+                                    area_v.possibilities.remove(number)
+                                    self.superareas[area_v.sa].amount[number-1] -= 1
 
     def clean_amount(self, supers, number, norm, m=False):
         """Decrement the amount if that number."""
         for i in supers:
-            for area in(self.superarea[i].areas):
+            for area in(self.superareas[i].areas):
                 if area.is_new:
                     if m:
                         if area.m == norm:
-                            if number in area.possibility:
-                                self.superarea[i].amount[number-1] -= 1
-                                area.possibility.remove(number)
-                                # print('M:', area.possibility,
-                                #       self.superarea[i].amount)
+                            if number in area.possibilities:
+                                self.superareas[i].amount[number-1] -= 1
+                                area.possibilities.remove(number)
+                                # print('M:', area.possibilities,
+                                #       self.superareas[i].amount)
                                 # delete the amount of that position/number
                                 #
                     else:
                         if area.n == norm:
-                            if number in area.possibility:
-                                # print('N:Ω', area.possibility,
-                                #       self.superarea[i].amount)
-                                self.superarea[i].amount[number-1] -= 1
-                                area.possibility.remove(number)
-                                # print('N:', area.possibility,
-                                #       self.superarea[i].amount)
+                            if number in area.possibilities:
+                                # print('N:Ω', area.possibilities,
+                                #       self.superareas[i].amount)
+                                self.superareas[i].amount[number-1] -= 1
+                                area.possibilities.remove(number)
+                                # print('N:', area.possibilities,
+                                #       self.superareas[i].amount)
                                 # delete the amount of that position/number
 
     def clean_n_m(self, numbers, index):
@@ -654,16 +656,16 @@ class Sudoku:
             # check pointing pair for each number which is not in that superarea.
             for i in range(9):
                 number = i+1
-                # if it is not in that self.superarea[index].
-                if number not in self.superarea[index].values:
-                    # check if the number is in the area.possibility
+                # if it is not in that self.superareas[index].
+                if number not in self.superareas[index].values:
+                    # check if the number is in the area.possibilities
                     # and controlle m and n
                     # print('\nChecking for number', i, 'if it can be a pointing pair in SuperArea', index)
                     # print('\tCheck number', number)
-                    for area in self.superarea[index].areas:
+                    for area in self.superareas[index].areas:
                         if area.is_new:
-                            if self.superarea[index].amount[i] / 2 == 1:
-                                if i+1 in area.possibility:
+                            if self.superareas[index].amount[i] / 2 == 1:
+                                if i+1 in area.possibilities:
                                     if number not in numbers:
                                         numbers[number] = []
                                     numbers[number].append(area.n)
@@ -693,12 +695,12 @@ class Sudoku:
     def check_info(self):
         """Display some information."""
         # self.display()
-        for i, superarea in enumerate(self.superarea):
+        for i, superarea in enumerate(self.superareas):
             if i == 2:
                 print("S", superarea.values)  # , superarea.amount)
                 for j, area in enumerate(superarea.areas):
                     if j in [4, 5]:
-                        print(area.possibility, '- possibilities')
+                        print(area.possibilities, '- possibilities')
 
         print()
         for i, horo in enumerate(self.horizontals):
@@ -706,86 +708,53 @@ class Sudoku:
                 print("H", horo.values)
                 for j, area in enumerate(horo.areas):
                     if j in [7, 8]:
-                        print(area.possibility, '- possibilities')
+                        print(area.possibilities, '- possibilities')
         print()
         for i, verti in enumerate(self.verticals):
             if i in [7, 8]:
                 print("V", verti.values)
                 for j, area in enumerate(verti.areas):
                     if j is 1:
-                        print(area.possibility, '- possibilities')
+                        print(area.possibilities, '- possibilities')
 
-        for i, superarea in enumerate(self.superarea):
+        for i, superarea in enumerate(self.superareas):
             if i == 2:
                 print("S", superarea.values)  # , superarea.amount)
                 for j, area in enumerate(superarea.areas):
                     if area.is_new:
-                        print(j, area.possibility, '- possibilities', area.is_new)
+                        print(j, area.possibilities, '- possibilities', area.is_new)
         print()
 
     def info_superarea(self, spec=False):
         """Display all possibilities."""
         if not spec:
-            for i, superarea in enumerate(self.superarea):
+            for i, superarea in enumerate(self.superareas):
                 print(f'In SUPERAREA {i}: - {superarea.amount}')
                 for j, area in enumerate(superarea.areas):
-                    print(f'\t\tIn AREA {j} posibilities', area.possibility)
+                    print(f'\t\tIn AREA {j} posibilities', area.possibilities)
                 print()
         else:
-            for i, superarea in enumerate(self.superarea):
+            for i, superarea in enumerate(self.superareas):
                 if i in spec:
                     print(f'In SUPERAREA {i}: - {superarea.amount}')
                     for j, area in enumerate(superarea.areas):
-                        print(f'\t\tIn AREA {j} posibilities', area.possibility)
+                        print(f'\t\tIn AREA {j} posibilities', area.possibilities)
                     print()
 
     def info_values(self):
         """Display all values for superarea, horizontal, vertical."""
-        for i, superarea in enumerate(self.superarea):
+        for i, superarea in enumerate(self.superareas):
             print(f'In SUPERAREA {i}:')
             for j, area in enumerate(superarea.areas):
-                print(f'\t\tIn AREA {j} posibilities', area.possibility)
+                print(f'\t\tIn AREA {j} posibilities', area.possibilities)
             print()
 
     def run(self):
         """Solve it."""
-        # self.info()
-        self.display()
-        self.run_target_loop()
-        self.info()
-        self.display()
-        # self.check_info()
-        self.display_verticals([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        # self.display_verticals([0, 1, 2])
-        self.display()
-        self.pointing_pair()
-        self.display_verticals([0, 1, 2])
-        # self.info()
-        # self.run_target_loop()
-        # self.info()
-        # # self.display()
-        #
-        # self.display_verticals([0, 1, 2])
-        # self.display_verticals([0, 1, 2])
-        # self.info_superarea([0, 1, 2])
-
-        #
-        #
-        # self.info()
-        # self.display()
-
-        # self.display_verticals([0, 1, 2])
-        # self.display_verticals()
-        # self.display_verticals()
-        # self.display_horizontals(0)
-        # self.display_superarea(2)
 
 
 def main():
-    """Run this in direct call."""
-    # display(sudoku_71())
-    print('main(): Ω Ω Ω - cmd+z')
-
+    """Latest run."""
     h1 = '9 6 0 0 0 0 2 0 0'
     h2 = '0 7 0 5 9 2 0 0 0'
     h3 = '0 0 0 8 0 0 0 0 0'
@@ -801,46 +770,8 @@ def main():
     s = Sudoku('medium')
     print(s.difficulty)
 
-    s.setup_values(h_test1)
-
-    for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
-        for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
-            # print('test1:', n, m, a.v)
-            assert a.v == int(h_test1[n].split()[m])
-            assert b.v == int(h_test1[m].split()[n])
-
-    # s.display()
-    #
-    s.run()  #
-    #
-    # s.display_superarea_amount()
-    # #
-    # s.display()
-    # s.info()
-    # print('\n\tIt works in a way that it fills in one right but not clean - multi fill\n\n\t check the SIX!\t\tand its nines... .9\n\n')
-
-    # print('\t', s.horizontals[0].values)
-    # print('\t', s.horizontals[1].values)
-    # print('\t', s.horizontals[2].values)
-    # print()
-    # print('\t', s.verticals[8].values)
-    # print('\t', s.verticals[7].values)
-    # print('\t', s.verticals[6].values)
-
-    # s.display_superarea_amount()
-
-    for n, (h, vert) in enumerate(zip(s.horizontals, s.verticals)):
-        for m, (a, b) in enumerate(zip(h.areas, vert.areas)):
-            if a.is_new:
-                ...
-                # print(a.n, a.m, a.possibility)
-                # print(a.n, a.m, a.possibility)
-
-    # print('\n\n\t   TODO: ')
-    # print('\t\t Problem in possibilities')
-    # print('\n\t\t in SA3 is in A4, A6 a 6 - which cannot be with an 6 in SA0 A4')
-    # print('\n\n')
-    s.display()
+    s.setup(h_test1)
+    s.run()
 
 
 if __name__ == "__main__":

@@ -7,28 +7,46 @@ class SuperArea
 class Horizontal
 class Sudoku
 ```
-### Areas
-An area is a position `(n, m)` in the matrix.
+### Area
+An area is a position `(n, m)` in the matrix which contains (has following attributes:) a value `v` (zero when no number is placed), the numbers that can be on that position `possibilities` it `is_fix` when the value was given as a starting point, `is_new` will be set `False` after a number/value is placed. Also an area know in which superarea (`sa`) it is.
 
-### Superarea
-Superareas are on this coordinates.
+Hint: The `n` / `m` of an area is the ID of horizontal / vertical.
+### Upper Classes
+The following classes exist to modify areas
+#### Superarea
+`values` contains the list of existing values/numbers which are fix or were placed. It has a specific order (see bottom of this subsection). `areas` is a list of all 81 areas (`Area()`). They are set simultaneous for superarea, horizontal and vertical. So it is ensured that a change on an area will change in all _upper classes_. The attribute `amount` counts how often a value is possible.
 
-id  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
---- | --- | --- | --- | --- | --- | ---  | ---  | ---  | ---
-begin | (0,0) | (0,3)| (0,6)  | (3,0)  |  (3,3) | (3,6) | (6,0) | (6,3) | (6,6)
-end   | (2,2) | (2,5) | (2,8) |  (5,3)| (5,5) | (5,8) | (8,3) | (8,3)| (8,8)
+Hint: If a number has an amount ((position+1=number) in array) of one it can be set/placed.
 
-### Horizontal
+Superareas are on following coordinates.
+
+ID  | e.g. | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+--- | --- | --- | --- | --- | --- | --- | ---  | ---  | ---  | ---
+begin | `(n,m)` | `(0,0)` | `(0,3)`| `(0,6)`  | `(3,0)`  |  `(3,3)` | `(3,6)` | `(6,0)` | `(6,3)` | `(6,6)`
+end   | `(n+2,m+2)` | `(2,2)` | `(2,5)` | `(2,8)` |  `(5,3)`| `(5,5)` | `(5,8)` | `(8,3)` | `(8,3)`| `(8,8)`
+
+Area ID goes from top left to bottom right. ID goes from `0:(n, m)` to `1:(n, m+1)`, `2:(n, m+2)`, `3:(n+1, m)` up to ... `8:(n+2, m+2)`
+
+#### Horizontal
+`areas` and `values` as in superarea.
+
 Horizontals are from
 `(n, 0) to (n, 8)` with `n = {0,1...,8}`.
-`n` is also the id of the horizontal.
-### Vertical
+`n` is also the ID of the horizontal.
+#### Vertical
+`areas` and `values` as in superarea.
+
 Verticals are from
 `(1, m) to (8, m)` with `m = {0,1...,8}`.
-`m` is also the id of the vertical.
+`m` is also the ID of the vertical.
 
 ### Sudoku
 That class is for the solving.
+
+`counts` counts how often a value is already set. This is used to get an order. A often placed number might be set easier.
+
+`missing_areas` contains all missing areas by a tuple of (n, m).
+#### Setup
 
 ## Example
 
@@ -46,6 +64,11 @@ That class is for the solving.
 
 
 ## TODO:
+- [ ] the `.amount` of all upper classes is set to 9 and has to be changed that it works again with order.
+- [ ] the `run()` method is changed and has to be reimplemented with the focus of `setup` and recallable functions.
+
+---
+- [ ] ~~setup Travis~~
 - [ ] put main content into a test file
 - [ ] add all modules after it is solving
 - [ ] run speed test
