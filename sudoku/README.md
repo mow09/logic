@@ -75,19 +75,22 @@ That class is for solving sudokus. It has the following list attributes to get i
 
 ## TODO:
 - [x] `.target_amount()` works
-    - [ ] check if number is set in value for each - like amount!
-    - [ ] check `set_value(setup=False)`
-        - amounts:
-            - [ ] superarea = 0
-            - [ ] horizontal = 0
-            - [ ] vertical = 0
-        - [ ] area
-            - [ ] value = number
-            - [ ] possibilities =[]
-        - [ ] counts
+
+- [ ] implement tests
 
 ---
 - [ ] the `.amount` of all upper classes is set to 9 and has to be changed that it works again with order.
+    - [ ] check if number is set in value for each - like amount!
+    - [ ] check `set_value(setup=False)`
+    - amounts:
+        - [ ] superarea = 0
+        - [ ] horizontal = 0
+        - [ ] vertical = 0
+    - [ ] area
+        - [ ] value = number
+        - [ ] possibilities =[]
+    - [ ] counts
+
 - [ ] the `run()` method is changed and has to be reimplemented with the focus of `setup` and recallable functions.
 
 ---

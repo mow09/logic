@@ -355,8 +355,8 @@ class Sudoku:
     def info(self):
         """Get info about the sudoku at this time."""
         print('\nINFOBOARD:')
-        print('\tSUPERAREA:')
-        print('\t\tSuperarea\tPlaced\tMissing')
+        print('\tSUPERAREA:\t\t\tAmount 0:is placed; 9:everywhere')
+        print(f'\t\tSuperarea\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
         missing_values_all = [i+1 for i in range(9)]*9
         missing_values_all_h = [i+1 for i in range(9)]*9
         missing_values_all_v = [i+1 for i in range(9)]*9
@@ -369,9 +369,11 @@ class Sudoku:
                     # print(missing_values, value, superarea.values)
                     missing_values.remove(value)
                     missing_values_all.remove(value)
-            print(f'\t\t\t{i}\t{counter}\t{missing_values}')
-        print('\tHORIZONTAL:')
-        print('\t\t\tn\tPlaced\tMissing')
+            print(
+                f'\t\t\t{i}\t{counter}\t{self.superareas[i].amount} ' +
+                f'\t{len(missing_values)}: {missing_values}')
+        print('\n\tHORIZONTAL:')
+        print(f'\t\t\tn\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
         for i, hori in enumerate(self.horizontals):
             # missing_values_all = [i+1 for i in range(9)]*9
             missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -382,9 +384,11 @@ class Sudoku:
                     # print(missing_values, value, superarea.values)
                     missing_values.remove(value)
                     missing_values_all_h.remove(value)
-            print(f'\t\t\t{i}\t{counter}\t{missing_values}')
-        print('\tVERTICALS:')
-        print('\t\t\tm\tPlaced\tMissing')
+            print(
+                f'\t\t\t{i}\t{counter}\t{self.horizontals[i].amount} ' +
+                f'\t{len(missing_values)}: {missing_values}')
+        print('\n\tVERTICALS:')
+        print(f'\t\t\tm\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
         for i, verti in enumerate(self.verticals):
             # missing_values_all = [i+1 for i in range(9)]*9
             missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -395,9 +399,14 @@ class Sudoku:
                     # print(missing_values, value, superarea.values)
                     missing_values.remove(value)
                     missing_values_all_v.remove(value)
-            print(f'\t\t\t{i}\t{counter}\t{missing_values}')
+            print(
+                f'\t\t\t{i}\t{counter}\t{self.verticals[i].amount} ' +
+                f'\t{len(missing_values)}: {missing_values}')
 
         print('\tSUMMERY:')
+        print('\t\tWhen a number is set ' +
+              'the amount of it in n,m,sa must be zero' +
+              'an NULL in Missing')
         counter = 81
         one, two, three, four, five, six, seven, eight, nine = [9]*9
         for i, val in enumerate(missing_values_all):
@@ -484,7 +493,7 @@ class Sudoku:
         print('\t\tmissing in seven:\t', seven, seven_h, seven_v)
         print('\t\tmissing in eight:\t', eight, eight_h, eight_v)
         print('\t\tmissing in nine:\t', nine, nine_h, nine_v)
-        # print(missing_values_all)
+
         print()
 
     def run_target(self):
@@ -714,7 +723,6 @@ class Sudoku:
                             area.possibilities.remove(number)
                         else:
                             self.add_amount(area, number)
-                    print('HERE', superarea.amount)
 
     def setup_areas(self, area):
         """Set up the Areas for all upper classes."""
@@ -739,7 +747,6 @@ class Sudoku:
             area.possibilities = []
             # ## clean possibilities
             self.clean_amount(area)
-            print(n, m, number)
             self.counts[number-1] += 1
             self.place_value(area)
         else:
@@ -826,6 +833,7 @@ def main():
 
     s.setup(h_test19)
     s.run()
+    s.info()
 
 
 if __name__ == "__main__":
