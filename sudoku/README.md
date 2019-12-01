@@ -52,7 +52,10 @@ That class is for solving sudokus. It has the following list attributes to get i
 
 ---
 `.setup()` (`set_value()`)
-`.target_amount()`
+
+### `.target_amount()`
+Is solving areas by the amount of possibilities.
+
 `.pointing_pair()`
 
 ### Setup
@@ -75,6 +78,9 @@ That class is for solving sudokus. It has the following list attributes to get i
 
 ## TODO:
 - [x] `.target_amount()` works
+- [ ] `.pointing_pair()`
+    - [ ] check pointing-paires to clean it
+- [ ] delete unused code and check comment code
 
 - [ ] implement tests
 
