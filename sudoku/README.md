@@ -20,10 +20,10 @@ Hint: If a number has an amount ((position+1=number) in array) of one it can be 
 
 Superareas are on following coordinates.
 
-ID  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
---- | --- | --- | --- | --- | --- | --- | ---  | ---  | ---  | ---
-begin | `(0,0)` | `(0,3)`| `(0,6)`  | `(3,0)`  |  `(3,3)` | `(3,6)` | `(6,0)` | `(6,3)` | `(6,6)`
-end   | `(2,2)` | `(2,5)` | `(2,8)` |  `(5,3)`| `(5,5)` | `(5,8)` | `(8,3)` | `(8,3)`| `(8,8)`
+ID    |       0 |       1 |       2 |        3 |       4 |       5 |       6 |       7 |   8
+  --- |     --- |     --- |     --- |      --- |     --- |     --- |    ---  |    ---  | --- 
+begin | `(0,0)` | `(0,3)` | `(0,6)` | `(3,0)`  | `(3,3)` | `(3,6)` | `(6,0)` | `(6,3)` | `(6,6)`
+end   | `(2,2)` | `(2,5)` | `(2,8)` |  `(5,3)` | `(5,5)` | `(5,8)` | `(8,3)` | `(8,3)` | `(8,8)`
 
 Area ID goes from top left to bottom right. ID goes from `0:(n, m)` to `1:(n, m+1)`, `2:(n, m+2)`, `3:(n+1, m)` up to ... `8:(n+2, m+2)`
 
@@ -101,6 +101,7 @@ Is solving areas by the amount of possibilities.
 
 ---
 - [ ] ~~setup Travis~~
+- [ ] clean unused code (overworked)
 - [ ] put main content into a test file
 - [ ] add all modules after it is solving
 - [ ] run speed test
