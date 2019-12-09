@@ -525,9 +525,12 @@ class Sudoku:
 
 #-#-#-#-#
 
-    def clean_n_m(self, number, superarea, n, m):
+    def clean_n_m(self, number, superarea, n_m, fix):
         print(superarea)
-        print(number, n, m, '\n\n')
+        if fix == 'n':
+            print('horizontal', n_m, number)
+        if fix == 'm':
+            print('vertical', n_m, number)
 
     def pointing_pair(self):
         """
@@ -547,26 +550,25 @@ class Sudoku:
                 if number not in superarea.values:
                     for area in superarea.areas:
                         if area.possibilities:  # if area.is_new:  # or
-                            print(number, superarea.values)
+                            print(area.possibilities, area.n, area.m)
+                            # print(number, superarea.values)
                             if n < 0 or m < 0:
                                 n = area.n
                                 m = area.m
                             else:
                                 if n != area.n:
-                                    # print('area not, n')
                                     n_count += 1
                                 if m != area.m:
-                                    # print('area not, m')
                                     m_count += 1
                     if n_count == 0:
                         # print(n_count)
                         print('working? -n', n_count)
-                        self.clean_n_m(number, superarea, n, m)
+                        self.clean_n_m(number, superarea, n_m=n, fix='n')
 
                     elif m_count == 0:
                         # print(m_count)
                         print('working? -m', m_count)
-                        self.clean_n_m(number, superarea, n, m)
+                        self.clean_n_m(number, superarea, n_m=m, fix='m')
 
     # def pointing_pair_box(self):
         # for horizontal in self.horizontals:
@@ -860,7 +862,39 @@ class Sudoku:
         self.target_amount()
         self.display()
         self.pointing_pair()
-        # self.pointing_pair_box()
+        print()
+        print()
+        print()
+        for number in range(1, 10):
+            if number not in self.superareas[8].values:
+                n = -1
+                m = -1
+                n_count = 0
+                m_count = 0
+                for area in self.superareas[8].areas:
+                    if area.possibilities:
+                        if n < 0 or m < 0:
+                            n = area.n
+                            m = area.m
+                        elif n_count and m_count > 0:
+                            # print('higher', n_count, m_count)
+                            break
+                        else:
+                            print('check it ')
+                            if n != area.n:
+                                # print(area.possibilities, area.n, area.m)
+                                n_count += 1
+                            if m != area.m:
+                                # print(area.possibilities, area.n, area.m)
+                                m_count += 1
+
+                if n_count == 0 and n >= 0:
+                    # print(n_count)
+                    print('-n', n_count, n, number)
+
+                elif m_count == 0 and m >= 0:
+                    # print(m_count)
+                    print('-m', m_count, m, number)
 
 
 def main():
@@ -885,14 +919,26 @@ def main():
     h18 = '0 0 0 9 1 4 0 2 0'
     h19 = '0 0 2 0 0 0 0 4 6'
 
+    h21 = '0 9 0 0 0 7 0 5 0'
+    h22 = '0 5 0 8 0 0 0 0 0'
+    h23 = '1 4 0 0 5 0 2 0 0'
+    h24 = '7 0 4 0 9 0 0 0 0'
+    h25 = '3 8 1 7 0 0 5 9 6'
+    h26 = '5 0 9 0 8 0 7 0 4'
+    h27 = '0 7 5 0 3 8 0 4 1'
+    h28 = '0 1 0 0 0 6 0 7 0'
+    h29 = '0 3 0 1 7 0 0 8 0'
+
     h_test19 = [h01, h02, h03, h04, h05, h06, h07, h08, h09]
     h_test72 = [h11, h12, h13, h14, h15, h16, h17, h18, h19]
+    h_test_on = [h21, h22, h23, h24, h25, h26, h27, h28, h29]
 
     # s = Sudoku('Stufe 9 - EXPERT')
-    s = Sudoku('Stufe 2 - Beginner')
+    # s = Sudoku('Stufe 2 - Beginner')
+    s = Sudoku('Stufe ? - ???')
     print(s.difficulty)
 
-    s.setup(h_test72)
+    s.setup(h_test_on)
     s.run()
     s.info()
 
