@@ -95,7 +95,7 @@ class Vertical:
 class Sudoku:
     """The class solves the sudoku."""
 
-    def __init__(self, difficulty):
+    def __init__(self, difficulty, horizontals=9, verticals=9):
         """Set the difficulty."""
         print('INITIAL SUDOKU')
         self.difficulty = difficulty
@@ -351,152 +351,8 @@ class Sudoku:
     #     # here should come the possibilities#s#s
     #     self.add_possibilities()
     #     self.add_amount()
-
-    def info(self):
-        """Get info about the sudoku at this time."""
-        print('\nINFOBOARD:')
-        print('\tSUPERAREA:\t\t\tAmount 0:is placed; 9:everywhere')
-        print(f'\t\tSuperarea\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
-        missing_values_all = [i+1 for i in range(9)]*9
-        missing_values_all_h = [i+1 for i in range(9)]*9
-        missing_values_all_v = [i+1 for i in range(9)]*9
-        for i, superarea in enumerate(self.superareas):
-            missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-            counter = 0
-            for value in superarea.values:
-                if value > 0:
-                    counter += 1
-                    # print(missing_values, value, superarea.values)
-                    missing_values.remove(value)
-                    missing_values_all.remove(value)
-            print(
-                f'\t\t\t{i}\t{counter}\t{self.superareas[i].amount} ' +
-                f'\t{len(missing_values)}: {missing_values}')
-        print('\n\tHORIZONTAL:')
-        print(f'\t\t\tn\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
-        for i, hori in enumerate(self.horizontals):
-            # missing_values_all = [i+1 for i in range(9)]*9
-            missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-            counter = 0
-            for value in hori.values:
-                if value > 0:
-                    counter += 1
-                    # print(missing_values, value, superarea.values)
-                    missing_values.remove(value)
-                    missing_values_all_h.remove(value)
-            print(
-                f'\t\t\t{i}\t{counter}\t{self.horizontals[i].amount} ' +
-                f'\t{len(missing_values)}: {missing_values}')
-        print('\n\tVERTICALS:')
-        print(f'\t\t\tm\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
-        for i, verti in enumerate(self.verticals):
-            # missing_values_all = [i+1 for i in range(9)]*9
-            missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-            counter = 0
-            for value in verti.values:
-                if value > 0:
-                    counter += 1
-                    # print(missing_values, value, superarea.values)
-                    missing_values.remove(value)
-                    missing_values_all_v.remove(value)
-            print(
-                f'\t\t\t{i}\t{counter}\t{self.verticals[i].amount} ' +
-                f'\t{len(missing_values)}: {missing_values}')
-
-        print('\tSUMMERY:')
-        print('\t\tWhen a number is set ' +
-              'the amount of it in n,m,sa must be zero' +
-              'an NULL in Missing')
-        counter = 81
-        one, two, three, four, five, six, seven, eight, nine = [9]*9
-        for i, val in enumerate(missing_values_all):
-            counter -= 1
-            if val == 1:
-                one -= 1
-            elif val == 2:
-                two -= 1
-            elif val == 3:
-                three -= 1
-            elif val == 4:
-                four -= 1
-            elif val == 5:
-                five -= 1
-            elif val == 6:
-                six -= 1
-            elif val == 7:
-                seven -= 1
-            elif val == 8:
-                eight -= 1
-            elif val == 9:
-                nine -= 1
-            else:
-                print('Error')
-
-        counter_h = 81
-        one_h, two_h, three_h, four_h, five_h, six_h, seven_h, eight_h, nine_h = [9]*9
-        for i, val in enumerate(missing_values_all_h):
-            counter_h -= 1
-            if val == 1:
-                one_h -= 1
-            elif val == 2:
-                two_h -= 1
-            elif val == 3:
-                three_h -= 1
-            elif val == 4:
-                four_h -= 1
-            elif val == 5:
-                five_h -= 1
-            elif val == 6:
-                six_h -= 1
-            elif val == 7:
-                seven_h -= 1
-            elif val == 8:
-                eight_h -= 1
-            elif val == 9:
-                nine_h -= 1
-            else:
-                print('Error')
-
-        counter_v = 81
-        one_v, two_v, three_v, four_v, five_v, six_v, seven_v, eight_v, nine_v = [9]*9
-        for i, val in enumerate(missing_values_all_v):
-            counter_v -= 1
-            if val == 1:
-                one_v -= 1
-            elif val == 2:
-                two_v -= 1
-            elif val == 3:
-                three_v -= 1
-            elif val == 4:
-                four_v -= 1
-            elif val == 5:
-                five_v -= 1
-            elif val == 6:
-                six_v -= 1
-            elif val == 7:
-                seven_v -= 1
-            elif val == 8:
-                eight_v -= 1
-            elif val == 9:
-                nine_v -= 1
-            else:
-                print('Error')
-        print('\t\tmissing in total:\t', len(missing_values_all),
-              len(missing_values_all_h), len(missing_values_all_v))
-        print('\t\tplaced in total:\t', counter, counter_h, counter_v)
-        print('\t\tmissing in one:\t\t', one, one_h, one_v)
-        print('\t\tmissing in two:\t\t', two, two_h, two_v)
-        print('\t\tmissing in three:\t', three, three_h, three_v)
-        print('\t\tmissing in four:\t', four, four_h, four_v)
-        print('\t\tmissing in five:\t', five, five_h, five_v)
-        print('\t\tmissing in six:\t\t', six, six_h, six_v)
-        print('\t\tmissing in seven:\t', seven, seven_h, seven_v)
-        print('\t\tmissing in eight:\t', eight, eight_h, eight_v)
-        print('\t\tmissing in nine:\t', nine, nine_h, nine_v)
-
-        print()
-
     # def run_target(self):
+
     #     """
     #     Run through each SuperArea.
     #
@@ -602,7 +458,7 @@ class Sudoku:
     #                 #       1*3, 'the number', key, 'for m', numbers[key][1])
     #                 self.clean_amount([index-2*3, index-1*3], key, numbers[key][1], True)
 
-    def pointing_pair(self):
+    def pointing_pair2(self):
         """Find poitning pairs."""
         print('Pointing Pair')
         for index in range(9):
@@ -631,7 +487,7 @@ class Sudoku:
                         # clean nm
                         self.clean_n_m(numbers, index)
                         del numbers[number]
-    #
+
     # def run_target_loop(self):
     #     """Run order/Find direct and hiden targets."""
     #     print('Run Order Loop')
@@ -668,6 +524,203 @@ class Sudoku:
     #     self.superareas[area.sa].amount[number-1] -= 1
 
 #-#-#-#-#
+
+    def clean_n_m(self, number, superarea, n, m):
+        print(superarea)
+        print(number, n, m, '\n\n')
+
+    def pointing_pair(self):
+        """
+        Delete impossible numbers.
+
+        If a possible number in a SA has a fix n or m, that number cannot be in
+        another SA with that fix n or m.
+        It will be deleted.
+        """
+        for number in range(1, 10):
+            print(number)
+            for superarea in self.superareas:
+                n = -1
+                m = -1
+                n_count = 0
+                m_count = 0
+                if number not in superarea.values:
+                    for area in superarea.areas:
+                        if area.possibilities:  # if area.is_new:  # or
+                            print(number, superarea.values)
+                            if n < 0 or m < 0:
+                                n = area.n
+                                m = area.m
+                            else:
+                                if n != area.n:
+                                    # print('area not, n')
+                                    n_count += 1
+                                if m != area.m:
+                                    # print('area not, m')
+                                    m_count += 1
+                    if n_count == 0:
+                        # print(n_count)
+                        print('working? -n', n_count)
+                        self.clean_n_m(number, superarea, n, m)
+
+                    elif m_count == 0:
+                        # print(m_count)
+                        print('working? -m', m_count)
+                        self.clean_n_m(number, superarea, n, m)
+
+    # def pointing_pair_box(self):
+        # for horizontal in self.horizontals:
+        #     for area in horizontal.areas:
+        #         if area.possibilities:
+        #             print(area)
+        #     # if [ for area in horizintal.areas] % horizontal.values.count(0) == 0:
+        #     #     print(horizontal.values.count(0))
+        #     print(horizontal)
+
+    def info(self):
+        """Get info about the sudoku at this time."""
+        print('\nINFOBOARD:')
+        print('\tSUPERAREA:\t\t\tAmount 0:is placed; 9:everywhere')
+        print(f'\t\tSuperarea\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
+        missing_values_all = [i+1 for i in range(9)]*9
+        missing_values_all_h = [i+1 for i in range(9)]*9
+        missing_values_all_v = [i+1 for i in range(9)]*9
+        for i, superarea in enumerate(self.superareas):
+            missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            counter = 0
+            for value in superarea.values:
+                if value > 0:
+                    counter += 1
+                    # print(missing_values, value, superarea.values)
+                    missing_values.remove(value)
+                    missing_values_all.remove(value)
+            print(
+                f'\t\t\t{i}\t{counter}\t{self.superareas[i].amount} ' +
+                f'\t{len(missing_values)}: {missing_values}')
+        print('\n\tHORIZONTAL:')
+        print(f'\t\t\tn\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
+        for i, hori in enumerate(self.horizontals):
+            # missing_values_all = [i+1 for i in range(9)]*9
+            missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            counter = 0
+            for value in hori.values:
+                if value > 0:
+                    counter += 1
+                    # print(missing_values, value, superarea.values)
+                    missing_values.remove(value)
+                    missing_values_all_h.remove(value)
+            print(
+                f'\t\t\t{i}\t{counter}\t{self.horizontals[i].amount} ' +
+                f'\t{len(missing_values)}: {missing_values}')
+        print('\n\tVERTICALS:')
+        print(f'\t\t\tm\tPlaced\t{[i for i in range(1,10)]}\t\tMissing')
+        for i, verti in enumerate(self.verticals):
+            # missing_values_all = [i+1 for i in range(9)]*9
+            missing_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            counter = 0
+            for value in verti.values:
+                if value > 0:
+                    counter += 1
+                    # print(missing_values, value, superarea.values)
+                    missing_values.remove(value)
+                    missing_values_all_v.remove(value)
+            print(
+                f'\t\t\t{i}\t{counter}\t{self.verticals[i].amount} ' +
+                f'\t{len(missing_values)}: {missing_values}')
+
+        print('\tSUMMERY:')
+        print('\t\tWhen a number is set ' +
+              'the amount of it in n,m,sa must be zero ' +
+              'and NULL in Missing')
+        counter = 81
+        one, two, three, four, five, six, seven, eight, nine = [9]*9
+        for i, val in enumerate(missing_values_all):
+            counter -= 1
+            if val == 1:
+                one -= 1
+            elif val == 2:
+                two -= 1
+            elif val == 3:
+                three -= 1
+            elif val == 4:
+                four -= 1
+            elif val == 5:
+                five -= 1
+            elif val == 6:
+                six -= 1
+            elif val == 7:
+                seven -= 1
+            elif val == 8:
+                eight -= 1
+            elif val == 9:
+                nine -= 1
+            else:
+                print('Error')
+
+        counter_h = 81
+        one_h, two_h, three_h, four_h, five_h, six_h, seven_h, eight_h, nine_h = [9]*9
+        for i, val in enumerate(missing_values_all_h):
+            counter_h -= 1
+            if val == 1:
+                one_h -= 1
+            elif val == 2:
+                two_h -= 1
+            elif val == 3:
+                three_h -= 1
+            elif val == 4:
+                four_h -= 1
+            elif val == 5:
+                five_h -= 1
+            elif val == 6:
+                six_h -= 1
+            elif val == 7:
+                seven_h -= 1
+            elif val == 8:
+                eight_h -= 1
+            elif val == 9:
+                nine_h -= 1
+            else:
+                print('Error')
+
+        counter_v = 81
+        one_v, two_v, three_v, four_v, five_v, six_v, seven_v, eight_v, nine_v = [9]*9
+        for i, val in enumerate(missing_values_all_v):
+            counter_v -= 1
+            if val == 1:
+                one_v -= 1
+            elif val == 2:
+                two_v -= 1
+            elif val == 3:
+                three_v -= 1
+            elif val == 4:
+                four_v -= 1
+            elif val == 5:
+                five_v -= 1
+            elif val == 6:
+                six_v -= 1
+            elif val == 7:
+                seven_v -= 1
+            elif val == 8:
+                eight_v -= 1
+            elif val == 9:
+                nine_v -= 1
+            else:
+                print('Error')
+        print(f'\t\tmissing in total:{len(missing_values_all)} ' +
+              f'{len(missing_values_all_h)} {len(missing_values_all_v)}')
+        print('\t\tplaced in total:', counter, counter_h, counter_v)
+        print('\t\tmissing ones:\t', one, one_h, one_v)
+        print('\t\tmissing twos:\t', two, two_h, two_v)
+        print('\t\tmissing threes:\t', three, three_h, three_v)
+        print('\t\tmissing fours:\t', four, four_h, four_v)
+        print('\t\tmissing fives:\t', five, five_h, five_v)
+        print('\t\tmissing sixs:\t', six, six_h, six_v)
+        print('\t\tmissing sevens:\t', seven, seven_h, seven_v)
+        print('\t\tmissing eights:\t', eight, eight_h, eight_v)
+        print('\t\tmissing nines:\t', nine, nine_h, nine_v)
+
+        print()
+
     def setup_values_superareas(self, area):
         """Get a list of values in SuperAreas."""
         print('SETUP_VALUES_SUPERAREAS')
@@ -806,26 +859,40 @@ class Sudoku:
         self.display()
         self.target_amount()
         self.display()
+        self.pointing_pair()
+        # self.pointing_pair_box()
 
 
 def main():
     """Latest run."""
-    h1 = '0 0 0 2 4 0 0 8 0'
-    h2 = '0 0 0 6 0 0 0 0 0'
-    h3 = '0 1 5 0 0 0 0 0 0'
-    h4 = '0 0 8 9 0 0 0 0 0'
-    h5 = '0 0 0 0 0 4 0 6 0'
-    h6 = '0 0 0 0 6 0 5 1 7'
-    h7 = '1 3 0 0 0 0 0 9 6'
-    h8 = '0 7 0 0 0 0 1 0 0'
-    h9 = '0 0 2 0 0 0 7 0 8'
+    h01 = '0 0 0 2 4 0 0 8 0'
+    h02 = '0 0 0 6 0 0 0 0 0'
+    h03 = '0 1 5 0 0 0 0 0 0'
+    h04 = '0 0 8 9 0 0 0 0 0'
+    h05 = '0 0 0 0 0 4 0 6 0'
+    h06 = '0 0 0 0 6 0 5 1 7'
+    h07 = '1 3 0 0 0 0 0 9 6'
+    h08 = '0 7 0 0 0 0 1 0 0'
+    h09 = '0 0 2 0 0 0 7 0 8'
 
-    h_test19 = [h1, h2, h3, h4, h5, h6, h7, h8, h9]
+    h11 = '9 6 0 0 0 0 2 0 0'
+    h12 = '0 7 0 5 9 2 0 0 0'
+    h13 = '0 0 0 8 0 0 0 0 0'
+    h14 = '0 2 0 0 0 0 7 0 8'
+    h15 = '0 0 8 0 0 0 9 0 0'
+    h16 = '1 0 3 0 0 0 0 5 0'
+    h17 = '0 0 0 0 0 6 0 0 0'
+    h18 = '0 0 0 9 1 4 0 2 0'
+    h19 = '0 0 2 0 0 0 0 4 6'
 
-    s = Sudoku('Stufe 9 - EXPERT')
+    h_test19 = [h01, h02, h03, h04, h05, h06, h07, h08, h09]
+    h_test72 = [h11, h12, h13, h14, h15, h16, h17, h18, h19]
+
+    # s = Sudoku('Stufe 9 - EXPERT')
+    s = Sudoku('Stufe 2 - Beginner')
     print(s.difficulty)
 
-    s.setup(h_test19)
+    s.setup(h_test72)
     s.run()
     s.info()
 

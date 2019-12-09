@@ -21,7 +21,7 @@ Hint: If a number has an amount ((position+1=number) in array) of one it can be 
 Superareas are on following coordinates.
 
 ID    |       0 |       1 |       2 |        3 |       4 |       5 |       6 |       7 |   8
-  --- |     --- |     --- |     --- |      --- |     --- |     --- |    ---  |    ---  | --- 
+  --- |     --- |     --- |     --- |      --- |     --- |     --- |    ---  |    ---  | ---
 begin | `(0,0)` | `(0,3)` | `(0,6)` | `(3,0)`  | `(3,3)` | `(3,6)` | `(6,0)` | `(6,3)` | `(6,6)`
 end   | `(2,2)` | `(2,5)` | `(2,8)` |  `(5,3)` | `(5,5)` | `(5,8)` | `(8,3)` | `(8,3)` | `(8,8)`
 
@@ -81,6 +81,8 @@ Is solving areas by the amount of possibilities.
 - [ ] `.pointing_pair()`
     - [ ] check pointing-paires to clean it
 - [ ] delete unused code and check comment code
+
+~~- [ ] implement n horizontals, m verticals and the superareas for it to have not just 9x9 sudokus~~
 
 - [ ] implement tests
 
